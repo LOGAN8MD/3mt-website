@@ -34,7 +34,7 @@
 // }
 // export default Home;
 
-import { Hammer, Wrench, Star } from "lucide-react";
+import {  Wrench, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";

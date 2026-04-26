@@ -9,7 +9,7 @@ import Services from "./pages/Services";
 import Industries from "./pages/Industries";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
-import FloatingContactButtons from "./components/FloatingContactButtons"; {/* ✅ floating call + WhatsApp */}
+// import FloatingContactButtons from "./components/FloatingContactButtons"; {/* ✅ floating call + WhatsApp */}
 
 function App() {
   return (
