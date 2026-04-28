@@ -21,7 +21,6 @@ function Navbar() {
             <Link to="/about" className="hover:text-yellow-400">About</Link>
             <Link to="/products" className="hover:text-yellow-400">Products</Link>
             <Link to="/services" className="hover:text-yellow-400">Services</Link>
-            <Link to="/industries" className="hover:text-yellow-400">Industries</Link>
             <Link to="/gallery" className="hover:text-yellow-400">Gallery</Link>
             <Link to="/contact" className="hover:text-yellow-400">Contact</Link>
           </div>
@@ -45,7 +44,6 @@ function Navbar() {
           <Link to="/about" className="block py-2 hover:text-yellow-400">About</Link>
           <Link to="/products" className="block py-2 hover:text-yellow-400">Products</Link>
           <Link to="/services" className="block py-2 hover:text-yellow-400">Services</Link>
-          <Link to="/industries" className="block py-2 hover:text-yellow-400">Industries</Link>
           <Link to="/gallery" className="block py-2 hover:text-yellow-400">Gallery</Link>
           <Link to="/contact" className="block py-2 hover:text-yellow-400">Contact</Link>
         </div>

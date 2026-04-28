@@ -6,7 +6,6 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
-import Industries from "./pages/Industries";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 // import FloatingContactButtons from "./components/FloatingContactButtons"; {/* ✅ floating call + WhatsApp */}
@@ -21,7 +20,6 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/industries" element={<Industries />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
