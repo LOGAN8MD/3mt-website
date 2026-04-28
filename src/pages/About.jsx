@@ -2,7 +2,7 @@ import { CheckCircle, Users, Target, Award, Calendar } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-yellow-500 mb-4">

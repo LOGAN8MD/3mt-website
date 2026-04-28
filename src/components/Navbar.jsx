@@ -40,12 +40,12 @@ function Navbar() {
       {/* Mobile Dropdown Menu */}
       {isOpen && (
         <div className="md:hidden bg-gray-800 px-4 pb-4 space-y-2">
-          <Link to="/" className="block py-2 hover:text-yellow-400">Home</Link>
-          <Link to="/about" className="block py-2 hover:text-yellow-400">About</Link>
-          <Link to="/products" className="block py-2 hover:text-yellow-400">Products</Link>
-          <Link to="/services" className="block py-2 hover:text-yellow-400">Services</Link>
-          <Link to="/gallery" className="block py-2 hover:text-yellow-400">Gallery</Link>
-          <Link to="/contact" className="block py-2 hover:text-yellow-400">Contact</Link>
+          <Link to="/" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>Home</Link>
+          <Link to="/about" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>About</Link>
+          <Link to="/products" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>Products</Link>
+          <Link to="/services" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>Services</Link>
+          <Link to="/gallery" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>Gallery</Link>
+          <Link to="/contact" className="block py-2 hover:text-yellow-400" onClick={() => setIsOpen(false)}>Contact</Link>
         </div>
       )}
     </nav>

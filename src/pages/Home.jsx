@@ -43,25 +43,25 @@ import "swiper/css/pagination";
 
 function Home() {
   return (
-    <section className="p-10 text-center">
+    <section className="p-4 sm:p-10 text-center">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-yellow-100 via-white to-blue-100 rounded-2xl shadow-xl p-12 mb-12">
-        <h1 className="text-5xl font-extrabold text-gray-900">
+      <div className="bg-gradient-to-r from-yellow-100 via-white to-blue-100 rounded-2xl shadow-xl p-6 md:p-12 mb-12">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900">
           Your Trusted Partner for Construction Machines & Equipment
         </h1>
-        <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto">
+        <p className="mt-4 md:mt-6 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
           With 35+ years of passionate sales & service, 3MT Machine Tools provides 
           builders, contractors, carpenters, and painters with reliable machines, 
           expert guidance, and unmatched after-sales support.
         </p>
-        <div className="mt-8 flex justify-center gap-6">
+        <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
           {/* <a
             href="/products"
             className="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition"
           >
             Explore Products
           </a> */}
-          <Link to="/products" className="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition"
+          <Link to="/products" className="w-full sm:w-auto px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition text-center"
             >Explore Products
           </Link>
           {/* <a
@@ -70,7 +70,7 @@ function Home() {
           >
             Get Expert Guidance
           </a> */}
-           <Link to="/contact" className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition"
+           <Link to="/contact" className="w-full sm:w-auto px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition text-center"
            >
             Get Expert Guidance
           </Link>
