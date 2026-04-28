@@ -37,6 +37,7 @@
 import {  Wrench, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -54,18 +55,25 @@ function Home() {
           expert guidance, and unmatched after-sales support.
         </p>
         <div className="mt-8 flex justify-center gap-6">
-          <a
+          {/* <a
             href="/products"
             className="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition"
           >
             Explore Products
-          </a>
-          <a
+          </a> */}
+          <Link to="/products" className="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition"
+            >Explore Products
+          </Link>
+          {/* <a
             href="/contact"
             className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition"
           >
             Get Expert Guidance
-          </a>
+          </a> */}
+           <Link to="/contact" className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition"
+           >
+            Get Expert Guidance
+          </Link>
         </div>
       </div>
 
@@ -201,12 +209,16 @@ function Home() {
 
   {/* CTA */}
   <div className="text-center mt-10">
-    <a
+    {/* <a
       href="/contact"
       className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
     >
       Contact for Service
-    </a>
+    </a> */}
+    <Link to="/contact" className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+    >
+            Contact for Service
+    </Link>
   </div>
 </div>
 
