@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -63,7 +67,7 @@ function Products() {
   });
 
   const ProductCard = ({ product }) => (
-    <div className="p-4 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col border border-gray-100">
+    <div className="p-4 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col border border-gray-100 h-full">
       <div className="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-4 p-2">
         {product.images && product.images.length > 0 ? (
           <img src={product.images[0].url} alt={product.name} className="max-h-full object-contain mix-blend-multiply" />
@@ -141,14 +145,33 @@ function Products() {
                         )}
                       </div>
                       
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Desktop Grid View */}
+                      <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedProducts.map(product => (
                           <ProductCard key={product._id} product={product} />
                         ))}
                       </div>
+
+                      {/* Mobile Carousel View */}
+                      <div className="sm:hidden -mx-2 px-2">
+                        <Swiper
+                          modules={[Pagination, Autoplay]}
+                          pagination={{ clickable: true, dynamicBullets: true }}
+                          autoplay={{ delay: 2000, disableOnInteraction: false }}
+                          spaceBetween={16}
+                          slidesPerView={1.15}
+                          className="!pb-10"
+                        >
+                          {displayedProducts.map(product => (
+                            <SwiperSlide key={product._id} className="h-auto">
+                              <ProductCard product={product} />
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+                      </div>
                       
                       {hasMore && (
-                        <div className="mt-8 text-center sm:hidden">
+                        <div className="mt-2 text-center sm:hidden">
                           <button 
                             onClick={() => setSelectedCategory(cat)}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
