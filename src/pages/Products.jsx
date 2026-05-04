@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
+import { Link } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -79,9 +80,9 @@ function Products() {
       <p className="text-sm text-gray-500 mt-2 mb-3">{product.brand}</p>
       <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
         <span className="text-xl font-bold text-gray-900">₹{product.price}</span>
-        <button className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow hover:bg-yellow-600 transition-colors text-sm">
+        <Link to={`/product/${product._id}`} className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow hover:bg-yellow-600 transition-colors text-sm">
           Details
-        </button>
+        </Link>
       </div>
     </div>
   );
