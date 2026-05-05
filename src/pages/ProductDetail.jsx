@@ -91,19 +91,19 @@ function ProductDetail() {
   });
 
   const ProductCard = ({ prod }) => (
-    <div className="p-4 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col border border-gray-100 h-full">
-      <div className="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-4 p-2">
+    <div className="p-3 sm:p-4 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col border border-gray-100 h-full">
+      <div className="w-full h-32 sm:h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-3 sm:mb-4 p-2">
         {prod.images && prod.images.length > 0 ? (
           <img src={prod.images[0].url} alt={prod.name} className="max-h-full object-contain mix-blend-multiply" />
         ) : (
-          <span className="text-gray-400">No image</span>
+          <span className="text-gray-400 text-xs sm:text-base">No image</span>
         )}
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[3rem]">{prod.name}</h3>
-      <p className="text-sm text-gray-500 mt-2 mb-3">{prod.brand}</p>
-      <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
-        <span className="text-xl font-bold text-gray-900">₹{prod.price}</span>
-        <Link to={`/product/${prod._id}`} className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow hover:bg-yellow-600 transition-colors text-sm">
+      <h3 className="text-sm sm:text-lg font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[2.5rem] sm:min-h-[3rem]">{prod.name}</h3>
+      <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 mb-2 sm:mb-3">{prod.brand}</p>
+      <div className="mt-auto flex justify-between items-center pt-2 sm:pt-3 border-t border-gray-100">
+        <span className="text-base sm:text-xl font-bold text-gray-900">₹{prod.price}</span>
+        <Link to={`/product/${prod._id}`} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow hover:bg-yellow-600 transition-colors text-xs sm:text-sm">
           Details
         </Link>
       </div>
@@ -224,9 +224,9 @@ function ProductDetail() {
                       <h3 className="text-lg font-bold text-gray-700 capitalize mb-4 pb-2 border-b border-gray-100">
                         {categoryName}
                       </h3>
-                      <div className="flex overflow-x-auto gap-6 pb-4 custom-scrollbar snap-x snap-mandatory">
+                      <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 custom-scrollbar snap-x snap-mandatory px-1">
                         {catItems.map(item => (
-                          <div key={item._id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px] flex-shrink-0 snap-start">
+                          <div key={item._id} className="w-[180px] min-w-[180px] sm:w-[280px] sm:min-w-[280px] lg:w-[320px] lg:min-w-[320px] flex-shrink-0 snap-start">
                             <ProductCard prod={item} />
                           </div>
                         ))}
