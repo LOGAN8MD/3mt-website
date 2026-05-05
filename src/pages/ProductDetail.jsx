@@ -79,6 +79,7 @@ function ProductDetail() {
     machine: [],
     accessory: [],
     part: [],
+    tool: [],
     spare: []
   };
 
@@ -195,22 +196,42 @@ function ProductDetail() {
 
         {/* --- Related Products Section --- */}
         <div className="mt-16 space-y-12">
-          {['machine', 'accessory', 'part', 'spare'].map(type => {
+          {['machine', 'accessory', 'part', 'tool', 'spare'].map(type => {
             const items = relatedByType[type];
             // Only render the section if there are related items
             if (!items || items.length === 0) return null;
             
+            // Group items by category
+            const groupedByCategory = items.reduce((acc, item) => {
+              const cat = item.category ? item.category.trim() : 'Other';
+              if (!acc[cat]) acc[cat] = [];
+              acc[cat].push(item);
+              return acc;
+            }, {});
+
             return (
               <div key={type} className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 animate-fade-in">
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-8">
                   <span className="w-2 h-8 bg-yellow-400 rounded-full"></span>
-                  <h2 className="text-2xl font-bold text-gray-900 capitalize">
+                  <h2 className="text-3xl font-bold text-gray-900 capitalize">
                     Related {type === 'accessory' ? 'Accessories' : type + 's'}
                   </h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {items.map(item => (
-                    <ProductCard key={item._id} prod={item} />
+                
+                <div className="space-y-10">
+                  {Object.entries(groupedByCategory).map(([categoryName, catItems]) => (
+                    <div key={categoryName}>
+                      <h3 className="text-lg font-bold text-gray-700 capitalize mb-4 pb-2 border-b border-gray-100">
+                        {categoryName}
+                      </h3>
+                      <div className="flex overflow-x-auto gap-6 pb-4 custom-scrollbar snap-x snap-mandatory">
+                        {catItems.map(item => (
+                          <div key={item._id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px] flex-shrink-0 snap-start">
+                            <ProductCard prod={item} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
