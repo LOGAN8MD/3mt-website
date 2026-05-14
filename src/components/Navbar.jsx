@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search } from "lucide-react"; 
+import { Menu, X, Search, ShoppingCart } from "lucide-react"; 
 import axiosInstance from "../utils/axiosInstance";
 
 function Navbar() {
@@ -9,6 +10,9 @@ function Navbar() {
   const [products, setProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   
+  const cartItems = useSelector(state => state.cart.cartItems);
+  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -98,10 +102,26 @@ function Navbar() {
             <Link to="/services" className="text-sm font-medium hover:text-yellow-400 transition-colors">Services</Link>
             <Link to="/gallery" className="text-sm font-medium hover:text-yellow-400 transition-colors">Gallery</Link>
             <Link to="/contact" className="px-4 py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400 transition-colors">Contact</Link>
+            <Link to="/cart" className="relative p-2 text-gray-200 hover:text-yellow-400 transition-colors">
+              <ShoppingCart className="w-6 h-6" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
+                  {cartItemCount}
+                </span>
+              )}
+            </Link>
           </div>
 
-          {/* Mobile Hamburger */}
-          <div className="lg:hidden shrink-0">
+          {/* Mobile Hamburger and Cart */}
+          <div className="lg:hidden flex items-center gap-4 shrink-0">
+            <Link to="/cart" className="relative p-2 text-gray-200 hover:text-yellow-400 transition-colors">
+              <ShoppingCart className="w-6 h-6" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
+                  {cartItemCount}
+                </span>
+              )}
+            </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-200 hover:text-yellow-400 focus:outline-none p-2"

@@ -68,21 +68,54 @@ function Products() {
   });
 
   const ProductCard = ({ product }) => (
-    <div className="p-4 bg-white shadow-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col border border-gray-100 h-full">
-      <div className="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-4 p-2">
+    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full">
+      {/* Image Container */}
+      <div className="relative w-full h-48 sm:h-56 bg-gray-50/50 flex items-center justify-center p-4 overflow-hidden">
         {product.images && product.images.length > 0 ? (
-          <img src={product.images[0].url} alt={product.name} className="max-h-full object-contain mix-blend-multiply" />
+          <img 
+            src={product.images[0].url} 
+            alt={product.name} 
+            className="max-h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" 
+          />
         ) : (
-          <span className="text-gray-400">No image</span>
+          <div className="flex flex-col items-center justify-center text-gray-400">
+            <svg className="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span className="text-xs font-medium uppercase tracking-wider">No Image</span>
+          </div>
         )}
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[3rem]">{product.name}</h3>
-      <p className="text-sm text-gray-500 mt-2 mb-3">{product.brand}</p>
-      <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
-        <span className="text-xl font-bold text-gray-900">₹{product.price}</span>
-        <Link to={`/product/${product._id}`} className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow hover:bg-yellow-600 transition-colors text-sm">
-          Details
-        </Link>
+
+      {/* Content */}
+      <div className="p-4 sm:p-5 flex flex-col flex-grow">
+        <div className="flex justify-between items-start gap-2 mb-3">
+          {product.brand && (
+            <span className="inline-block px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-full">
+              {product.brand}
+            </span>
+          )}
+          <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-[10px] sm:text-xs font-semibold rounded uppercase line-clamp-1 text-right">
+            {product.category || product.type || 'Tool'}
+          </span>
+        </div>
+        
+        <h3 className="text-base sm:text-lg font-bold text-gray-900 line-clamp-2 leading-tight mb-2 group-hover:text-yellow-600 transition-colors">
+          {product.name}
+        </h3>
+        
+        <div className="mt-auto pt-4 flex justify-between items-end border-t border-gray-50">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Price</span>
+            <span className="text-lg sm:text-2xl font-extrabold text-gray-900 tracking-tight">₹{product.price}</span>
+          </div>
+          
+          <Link 
+            to={`/product/${product._id}`} 
+            className="flex items-center justify-center bg-gray-900 hover:bg-yellow-500 text-white hover:text-gray-900 w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
+            title="View Details"
+          >
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </Link>
+        </div>
       </div>
     </div>
   );

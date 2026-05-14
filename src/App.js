@@ -9,6 +9,7 @@ import Services from "./pages/Services";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
 // import FloatingContactButtons from "./components/FloatingContactButtons"; {/* ✅ floating call + WhatsApp */}
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
       <Footer />
