@@ -68,7 +68,7 @@ function Products() {
   });
 
   const ProductCard = ({ product }) => (
-    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full">
+    <Link to={`/product/${product._id}`} className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full cursor-pointer block">
       {/* Image Container */}
       <div className="relative w-full h-48 sm:h-56 bg-gray-50/50 flex items-center justify-center p-4 overflow-hidden">
         {product.images && product.images.length > 0 ? (
@@ -107,17 +107,9 @@ function Products() {
             <span className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Price</span>
             <span className="text-lg sm:text-2xl font-extrabold text-gray-900 tracking-tight">₹{product.price}</span>
           </div>
-          
-          <Link 
-            to={`/product/${product._id}`} 
-            className="flex items-center justify-center bg-gray-900 hover:bg-yellow-500 text-white hover:text-gray-900 w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
-            title="View Details"
-          >
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </Link>
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   return (

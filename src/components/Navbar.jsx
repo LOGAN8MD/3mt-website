@@ -100,7 +100,7 @@ function Navbar() {
             <Link to="/about" className="text-sm font-medium hover:text-yellow-400 transition-colors">About</Link>
             <Link to="/products" className="text-sm font-medium hover:text-yellow-400 transition-colors">Products</Link>
             <Link to="/services" className="text-sm font-medium hover:text-yellow-400 transition-colors">Services</Link>
-            <Link to="/gallery" className="text-sm font-medium hover:text-yellow-400 transition-colors">Gallery</Link>
+            {/* <Link to="/gallery" className="text-sm font-medium hover:text-yellow-400 transition-colors">Gallery</Link> */}
             <Link to="/contact" className="px-4 py-2 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400 transition-colors">Contact</Link>
             <Link to="/cart" className="relative p-2 text-gray-200 hover:text-yellow-400 transition-colors">
               <ShoppingCart className="w-6 h-6" />

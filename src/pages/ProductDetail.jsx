@@ -110,7 +110,7 @@ function ProductDetail() {
   });
 
   const ProductCard = ({ prod }) => (
-    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full">
+    <Link to={`/product/${prod._id}`} className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full cursor-pointer block">
       {/* Image Container */}
       <div className="relative w-full h-40 sm:h-48 bg-gray-50/50 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
         {prod.images && prod.images.length > 0 ? (
@@ -149,17 +149,9 @@ function ProductDetail() {
             <span className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Price</span>
             <span className="text-base sm:text-xl font-extrabold text-gray-900 tracking-tight">₹{prod.price}</span>
           </div>
-          
-          <Link 
-            to={`/product/${prod._id}`} 
-            className="flex items-center justify-center bg-gray-900 hover:bg-yellow-500 text-white hover:text-gray-900 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
-            title="View Details"
-          >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </Link>
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   return (
