@@ -24,11 +24,37 @@
 //       </div>
 
 //       {/* Testimonials */}
-//       <div className="mt-10 bg-gray-100 p-6 rounded-lg shadow">
-//         <h2 className="text-2xl font-bold mb-4">What Our Clients Say</h2>
-//         <p className="italic">“3MT tools helped us complete projects faster and safer!”</p>
-//         <p className="mt-2">– Construction Firm, Mumbai</p>
-//       </div>
+//       <div className="mt-12 bg-gray-100 p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
+      //   <h2 className="text-3xl font-bold mb-6">What Our Clients Say</h2>
+        
+      //   <div className="flex flex-col items-center">
+      //     {/* Avatar */}
+      //     <img
+      //       src="https://i.pravatar.cc/100?img=12"
+      //       alt="Client Avatar"
+      //       className="w-20 h-20 rounded-full border-4 border-white shadow-md mb-4"
+      //     />
+
+      //     {/* Review Text */}
+      //     <p className="italic text-lg text-gray-700">
+      //       “3MT tools helped us complete projects faster and safer! Their guidance 
+      //       on choosing the right machines made a big difference.”
+      //     </p>
+
+      //     {/* Client Info */}
+      //     <p className="mt-3 text-gray-900 font-semibold">SHAILESH PATEL</p>
+      //     <p className="text-gray-500 text-sm">RAMJIYANI CONSTRUCTION PRIVATE LIMITED, Mumbai</p>
+
+      //     {/* Star Ratings */}
+      //     <div className="flex mt-3">
+      //       <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+      //       <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+      //       <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+      //       <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+      //       <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+      //     </div>
+      //   </div>
+      // </div>
 //     </section>
 //   );
 // }
@@ -223,37 +249,7 @@ function Home() {
 </div>
 
       {/* Testimonials */}
-      <div className="mt-12 bg-gray-100 p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-        <h2 className="text-3xl font-bold mb-6">What Our Clients Say</h2>
-        
-        <div className="flex flex-col items-center">
-          {/* Avatar */}
-          <img
-            src="https://i.pravatar.cc/100?img=12"
-            alt="Client Avatar"
-            className="w-20 h-20 rounded-full border-4 border-white shadow-md mb-4"
-          />
-
-          {/* Review Text */}
-          <p className="italic text-lg text-gray-700">
-            “3MT tools helped us complete projects faster and safer! Their guidance 
-            on choosing the right machines made a big difference.”
-          </p>
-
-          {/* Client Info */}
-          <p className="mt-3 text-gray-900 font-semibold">SHAILESH PATEL</p>
-          <p className="text-gray-500 text-sm">RAMJIYANI CONSTRUCTION PRIVATE LIMITED, Mumbai</p>
-
-          {/* Star Ratings */}
-          <div className="flex mt-3">
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-          </div>
-        </div>
-      </div>
+      
     </section>
   );
 }
