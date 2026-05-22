@@ -139,7 +139,7 @@ function Navbar() {
           <Link to="/about" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>About</Link>
           <Link to="/products" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>Products</Link>
           <Link to="/services" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>Services</Link>
-          <Link to="/gallery" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>Gallery</Link>
+          {/* <Link to="/gallery" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>Gallery</Link> */}
           <Link to="/contact" className="block px-3 py-2 mt-4 bg-yellow-500 text-gray-900 font-bold text-center rounded-lg hover:bg-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>Contact Us</Link>
         </div>
       )}
