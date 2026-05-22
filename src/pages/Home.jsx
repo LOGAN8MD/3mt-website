@@ -60,7 +60,7 @@
 // }
 // export default Home;
 
-import {  Wrench, Star } from "lucide-react";
+import {  Wrench } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Link } from "react-router-dom";
