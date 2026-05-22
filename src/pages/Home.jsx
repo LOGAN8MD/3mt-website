@@ -66,19 +66,20 @@ import { Autoplay, Pagination } from "swiper/modules";
 import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/pagination";
+import { useTranslation } from "react-i18next";
 
 function Home() {
+  const { t } = useTranslation();
+
   return (
     <section className="p-4 sm:p-10 text-center">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-yellow-100 via-white to-blue-100 rounded-2xl shadow-xl p-6 md:p-12 mb-12">
         <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900">
-          Your Trusted Partner for Construction Machines & Equipment
+          {t('home.hero_title')}
         </h1>
         <p className="mt-4 md:mt-6 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-          With 35+ years of passionate sales & service, 3MT Machine Tools provides 
-          builders, contractors, carpenters, and painters with reliable machines, 
-          expert guidance, and unmatched after-sales support.
+          {t('home.hero_subtitle')}
         </p>
         <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
           {/* <a
@@ -87,25 +88,18 @@ function Home() {
           >
             Explore Products
           </a> */}
-          <Link to="/products" className="w-full sm:w-auto px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition text-center"
-            >Explore Products
+          <Link to="/products" className="w-full sm:w-auto px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition text-center">
+            {t('home.explore_products')}
           </Link>
-          {/* <a
-            href="/contact"
-            className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition"
-          >
-            Get Expert Guidance
-          </a> */}
-           <Link to="/contact" className="w-full sm:w-auto px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition text-center"
-           >
-            Get Expert Guidance
+          <Link to="/contact" className="w-full sm:w-auto px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-900 transition text-center">
+            {t('home.get_guidance')}
           </Link>
         </div>
       </div>
 
       {/* Products Carousel */}
 <div className="mt-12">
-  <h2 className="text-3xl font-bold mb-6">Our Products</h2>
+  <h2 className="text-3xl font-bold mb-6">{t('home.our_products')}</h2>
   <Swiper
     modules={[Autoplay, Pagination]}
     autoplay={{ delay: 2500, disableOnInteraction: false }}
@@ -128,9 +122,9 @@ function Home() {
             className="max-h-48 object-contain"
           />
         </div>
-        <h3 className="mt-4 text-xl font-semibold">Drill Machine</h3>
+        <h3 className="mt-4 text-xl font-semibold">{t('home.drill')}</h3>
         <p className="text-gray-600">
-          High-performance drills for builders and carpenters.
+          {t('home.drill_desc')}
         </p>
       </div>
     </SwiperSlide>
@@ -145,9 +139,9 @@ function Home() {
             className="max-h-48 object-contain"
           />
         </div>
-        <h3 className="mt-4 text-xl font-semibold">Grinder</h3>
+        <h3 className="mt-4 text-xl font-semibold">{t('home.grinder')}</h3>
         <p className="text-gray-600">
-          Durable grinders for heavy-duty construction work.
+          {t('home.grinder_desc')}
         </p>
       </div>
     </SwiperSlide>
@@ -162,9 +156,9 @@ function Home() {
             className="max-h-48 object-contain"
           />
         </div>
-        <h3 className="mt-4 text-xl font-semibold">Cutter</h3>
+        <h3 className="mt-4 text-xl font-semibold">{t('home.cutter')}</h3>
         <p className="text-gray-600">
-          Precision cutters to ensure smooth operations.
+          {t('home.cutter_desc')}
         </p>
       </div>
     </SwiperSlide>
@@ -179,9 +173,9 @@ function Home() {
             className="max-h-48 object-contain"
           />
         </div>
-        <h3 className="mt-4 text-xl font-semibold">Breaker</h3>
+        <h3 className="mt-4 text-xl font-semibold">{t('home.breaker')}</h3>
         <p className="text-gray-600">
-          Powerful breakers for demolition and heavy tasks.
+          {t('home.breaker_desc')}
         </p>
       </div>
     </SwiperSlide>
@@ -190,15 +184,15 @@ function Home() {
 
       {/* Services Section */}
 <div className="mt-16">
-  <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Services</h2>
+  <h2 className="text-3xl font-bold text-gray-900 mb-8">{t('home.our_services')}</h2>
   
   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
     {/* Service 1 */}
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <Wrench className="w-12 h-12 text-blue-600 mb-3" />
-      <h3 className="text-lg font-semibold">Repair</h3>
-      <p className="mt-2 text-gray-700 text-sm">
-        Expert repair services to restore your machines to top condition.
+      <h3 className="text-lg font-semibold">{t('home.repair')}</h3>
+      <p className="mt-2 text-gray-700 text-sm text-center">
+        {t('home.repair_desc')}
       </p>
     </div>
 
@@ -206,9 +200,9 @@ function Home() {
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/ios-filled/50/000000/maintenance.png" 
            alt="Maintenance" className="w-12 h-12 mb-3" />
-      <h3 className="text-lg font-semibold">Maintenance</h3>
-      <p className="mt-2 text-gray-700 text-sm">
-        Scheduled maintenance for smooth & reliable machine performance.
+      <h3 className="text-lg font-semibold">{t('home.maintenance')}</h3>
+      <p className="mt-2 text-gray-700 text-sm text-center">
+        {t('home.maintenance_desc')}
       </p>
     </div>
 
@@ -216,9 +210,9 @@ function Home() {
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/ios-filled/50/000000/gear.png" 
            alt="Spare Parts" className="w-12 h-12 mb-3" />
-      <h3 className="text-lg font-semibold">Spare Parts</h3>
-      <p className="mt-2 text-gray-700 text-sm">
-        Genuine spare parts to ensure durability and performance.
+      <h3 className="text-lg font-semibold">{t('home.spare_parts')}</h3>
+      <p className="mt-2 text-gray-700 text-sm text-center">
+        {t('home.spare_parts_desc')}
       </p>
     </div>
 
@@ -226,24 +220,17 @@ function Home() {
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/ios-filled/50/000000/24-hours.png" 
            alt="Emergency Support" className="w-12 h-12 mb-3" />
-      <h3 className="text-lg font-semibold">Emergency Support</h3>
-      <p className="mt-2 text-gray-700 text-sm">
-        24/7 support to minimize downtime and keep your work running.
+      <h3 className="text-lg font-semibold">{t('home.emergency')}</h3>
+      <p className="mt-2 text-gray-700 text-sm text-center">
+        {t('home.emergency_desc')}
       </p>
     </div>
   </div>
 
   {/* CTA */}
   <div className="text-center mt-10">
-    {/* <a
-      href="/contact"
-      className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
-    >
-      Contact for Service
-    </a> */}
-    <Link to="/contact" className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
-    >
-            Contact for Service
+    <Link to="/contact" className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
+      {t('home.contact_service')}
     </Link>
   </div>
 </div>

@@ -1,36 +1,33 @@
 import { Wrench, ShoppingCart, LifeBuoy, Package, GraduationCap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Services() {
+  const { t } = useTranslation();
   const services = [
     {
-      title: "Machine Sales",
+      title: t('services.sales'),
       icon: <ShoppingCart className="w-10 h-10 text-yellow-600 mb-3" />,
-      description:
-        "We provide top-quality construction machines such as drills, cutters, grinders, and breakers. Our experts guide you to select the right tool for your needs.",
+      description: t('services.sales_desc'),
     },
     {
-      title: "Repair & Maintenance",
+      title: t('services.repair'),
       icon: <Wrench className="w-10 h-10 text-yellow-600 mb-3" />,
-      description:
-        "Our skilled technicians ensure your machines run smoothly with reliable repairs, servicing, and preventive maintenance for long-lasting performance.",
+      description: t('services.repair_desc'),
     },
     {
-      title: "Spare Parts & Accessories",
+      title: t('services.spare_parts'),
       icon: <Package className="w-10 h-10 text-yellow-600 mb-3" />,
-      description:
-        "We stock genuine spare parts and essential accessories, ensuring your tools stay durable and efficient while minimizing downtime.",
+      description: t('services.spare_parts_desc'),
     },
     {
-      title: "Emergency Support",
+      title: t('services.emergency'),
       icon: <LifeBuoy className="w-10 h-10 text-yellow-600 mb-3" />,
-      description:
-        "Construction can’t stop — and neither do we. Our quick-response emergency support helps you avoid costly project delays.",
+      description: t('services.emergency_desc'),
     },
     {
-      title: "Training & Guidance",
+      title: t('services.training'),
       icon: <GraduationCap className="w-10 h-10 text-yellow-600 mb-3" />,
-      description:
-        "We don’t just sell machines — we guide you in using them safely and effectively, providing recommendations tailored to your projects.",
+      description: t('services.training_desc'),
     },
   ];
 
@@ -38,11 +35,9 @@ export default function Services() {
     <div className="p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-yellow-500 mb-4">Our Services</h1>
+        <h1 className="text-4xl font-bold text-yellow-500 mb-4">{t('services.title')}</h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          At 3MT Machine Tools, we go beyond just selling machines. We provide a
-          complete package of services to keep your projects running efficiently,
-          safely, and without delays.
+          {t('services.subtitle')}
         </p>
       </div>
 
@@ -63,13 +58,13 @@ export default function Services() {
       {/* CTA */}
       <div className="text-center mt-16">
         <h2 className="text-2xl font-bold mb-4">
-          Need machines, service, or quick support?
+          {t('services.cta_title')}
         </h2>
         <a
           href="/contact"
           className="bg-yellow-500 text-white px-6 py-3 rounded-lg shadow hover:bg-yellow-600 transition font-semibold"
         >
-          Contact Us Now
+          {t('services.cta_btn')}
         </a>
       </div>
     </div>

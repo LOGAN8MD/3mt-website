@@ -10,12 +10,14 @@ import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
-// import FloatingContactButtons from "./components/FloatingContactButtons"; {/* ✅ floating call + WhatsApp */}
+import LanguagePopup from "./components/LanguagePopup";
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
+    <>
+      <LanguagePopup />
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -30,7 +32,8 @@ function App() {
       </main>
       <Footer />
       {/* <FloatingContactButtons />  */}
-    </div>
+      </div>
+    </>
   );
 }
 

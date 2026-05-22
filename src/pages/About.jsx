@@ -1,30 +1,26 @@
 import { CheckCircle, Users, Target, Award, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function About() {
+  const { t } = useTranslation();
   return (
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-yellow-500 mb-4">
-          About 3MT Machine Tools
+          {t('about.title')}
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          With a legacy of over 35 years in sales and service, 3MT Machine Tools
-          has been a trusted partner for builders, contractors, carpenters, and
-          construction professionals across India.
+          {t('about.subtitle')}
         </p>
       </div>
 
       {/* Who We Are */}
       <section className="grid md:grid-cols-2 gap-10 mb-16">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Who We Are</h2>
+          <h2 className="text-2xl font-semibold mb-4">{t('about.who_we_are')}</h2>
           <p className="text-gray-700 leading-relaxed">
-            At 3MT Machine Tools, we provide high-quality construction machines,
-            tools, and equipment backed with unmatched customer support. Beyond
-            just selling machines, we guide our customers to choose the right
-            products and ensure proper usage for long-lasting performance and
-            safety.
+            {t('about.who_we_are_desc')}
           </p>
         </div>
         <div>
@@ -39,53 +35,49 @@ export default function About() {
       {/* Mission & Vision */}
       <section className="grid md:grid-cols-2 gap-10 mb-16">
         <div className="bg-gray-50 p-6 rounded-lg shadow">
-          <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
+          <h2 className="text-2xl font-semibold mb-4">{t('about.mission')}</h2>
           <p className="text-gray-700">
-            To deliver reliable, durable, and innovative construction machines
-            with unmatched customer service, ensuring every project runs smoothly
-            and efficiently.
+            {t('about.mission_desc')}
           </p>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg shadow">
-          <h2 className="text-2xl font-semibold mb-4">Our Vision</h2>
+          <h2 className="text-2xl font-semibold mb-4">{t('about.vision')}</h2>
           <p className="text-gray-700">
-            To be the most trusted name in construction tools and equipment across
-            India, known for expertise, customer-first guidance, and lifelong
-            service support.
+            {t('about.vision_desc')}
           </p>
         </div>
       </section>
 
       {/* Our Values */}
       <section className="mb-16">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Our Values</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center">{t('about.values')}</h2>
         <div className="grid md:grid-cols-4 gap-6">
           <div className="p-6 bg-yellow-50 rounded-lg shadow text-center">
             <Users className="w-10 h-10 text-yellow-600 mx-auto mb-3" />
-            <h3 className="font-semibold">Customer Commitment</h3>
+            <h3 className="font-semibold">{t('about.value1')}</h3>
             <p className="text-gray-600 text-sm">
-              We treat every client as a long-term partner.
+              {t('about.value1_desc')}
             </p>
           </div>
           <div className="p-6 bg-yellow-50 rounded-lg shadow text-center">
             <Award className="w-10 h-10 text-yellow-600 mx-auto mb-3" />
-            <h3 className="font-semibold">Service Excellence</h3>
+            <h3 className="font-semibold">{t('about.value2')}</h3>
             <p className="text-gray-600 text-sm">
-              Beyond sales, we provide continuous after-sales support.
+              {t('about.value2_desc')}
             </p>
           </div>
           <div className="p-6 bg-yellow-50 rounded-lg shadow text-center">
             <Target className="w-10 h-10 text-yellow-600 mx-auto mb-3" />
-            <h3 className="font-semibold">Innovation</h3>
+            <h3 className="font-semibold">{t('about.value3')}</h3>
             <p className="text-gray-600 text-sm">
-              We keep upgrading our tools and solutions for modern needs.
+              {t('about.value3_desc')}
             </p>
           </div>
           <div className="p-6 bg-yellow-50 rounded-lg shadow text-center">
             <CheckCircle className="w-10 h-10 text-yellow-600 mx-auto mb-3" />
-            <h3 className="font-semibold">Reliability</h3>
+            <h3 className="font-semibold">{t('about.value4')}</h3>
             <p className="text-gray-600 text-sm">
-              Trusted by contractors, builders, and local professionals.
+              {t('about.value4_desc')}
             </p>
           </div>
         </div>
@@ -93,16 +85,16 @@ export default function About() {
 
       {/* Our Journey - Timeline */}
       <section className="mb-16">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Our Journey</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center">{t('about.journey')}</h2>
         <div className="relative border-l-4 border-yellow-400 ml-6">
           {/* Timeline Item 1 */}
           <div className="mb-10 ml-6">
             <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-yellow-500 rounded-full">
               <Calendar className="w-4 h-4 text-white" />
             </span>
-            <h3 className="text-lg font-semibold">1988 – The Beginning</h3>
+            <h3 className="text-lg font-semibold">{t('about.journey1')}</h3>
             <p className="text-gray-600">
-              3MT Machine Tools was founded with the vision to provide high-quality construction tools and professional service to the local community.
+              {t('about.journey1_desc')}
             </p>
           </div>
 
@@ -111,11 +103,9 @@ export default function About() {
             <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-yellow-500 rounded-full">
               <Calendar className="w-4 h-4 text-white" />
             </span>
-            <h3 className="text-lg font-semibold">2000s – Expansion</h3>
+            <h3 className="text-lg font-semibold">{t('about.journey2')}</h3>
             <p className="text-gray-600">
-              Expanded our services to include repairs, maintenance, spare parts,
-              and emergency customer support, becoming a one-stop solution for
-              contractors.
+              {t('about.journey2_desc')}
             </p>
           </div>
 
@@ -124,11 +114,9 @@ export default function About() {
             <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-yellow-500 rounded-full">
               <Calendar className="w-4 h-4 text-white" />
             </span>
-            <h3 className="text-lg font-semibold">Today – A Trusted Partner</h3>
+            <h3 className="text-lg font-semibold">{t('about.journey3')}</h3>
             <p className="text-gray-600">
-              Today, with 35 years of experience, 3MT Machine Tools continues to
-              guide thousands of customers with expert advice, reliable machines,
-              and professional after-sales support.
+              {t('about.journey3_desc')}
             </p>
           </div>
         </div>
@@ -136,14 +124,14 @@ export default function About() {
 
       {/* Why Choose Us */}
       <section className="mb-16">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Why Choose Us</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center">{t('about.why_choose')}</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 bg-gray-50 rounded-lg shadow">
             <ul className="space-y-3 text-gray-700">
-              <li>✅ 35+ years of legacy in sales & service</li>
-              <li>✅ Wide range of construction tools & equipment</li>
-              <li>✅ Genuine spare parts & emergency support</li>
-              <li>✅ Trusted by contractors, carpenters, painters & builders</li>
+              <li>{t('about.why1')}</li>
+              <li>{t('about.why2')}</li>
+              <li>{t('about.why3')}</li>
+              <li>{t('about.why4')}</li>
             </ul>
           </div>
           <div>
@@ -159,13 +147,13 @@ export default function About() {
       {/* Call to Action */}
       <section className="text-center">
         <h2 className="text-2xl font-bold mb-4">
-          Looking for Reliable Machines and Trusted Service?
+          {t('about.cta_title')}
         </h2>
         <a
           href="/contact"
           className="bg-yellow-500 text-white px-6 py-3 rounded-lg shadow hover:bg-yellow-600 transition font-semibold"
         >
-          Contact Us Today
+          {t('about.cta_btn')}
         </a>
       </section>
     </div>
