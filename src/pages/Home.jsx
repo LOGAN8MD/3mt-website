@@ -218,7 +218,7 @@ function Home() {
 
     {/* Service 4 */}
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
-      <img src="https://img.icons8.com/ios-filled/50/000000/24-hours.png" 
+      <img src="https://img.icons8.com/?size=100&id=vB2aQzp05MIo&format=png&color=000000" 
            alt="Emergency Support" className="w-12 h-12 mb-3" />
       <h3 className="text-lg font-semibold">{t('home.emergency')}</h3>
       <p className="mt-2 text-gray-700 text-sm text-center">
