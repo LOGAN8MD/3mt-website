@@ -15,10 +15,10 @@ The website reads the backend origin from `REACT_APP_API_BASE_URL`.
 | Context | File or setting | Value |
 | --- | --- | --- |
 | Local development | `.env.development` | `http://localhost:8080` |
-| Production build | `.env.production` | `https://threemt-server.onrender.com` |
-| Netlify | Environment variable | `REACT_APP_API_BASE_URL=https://threemt-server.onrender.com` |
+| Local production-build testing | Ignored `.env.production` | `https://threemt-server.onrender.com` |
+| Netlify production | Environment variable | `REACT_APP_API_BASE_URL=https://threemt-server.onrender.com` |
 
-Do not include `/api` or a trailing slash. Create React App embeds environment values when the development server or production build starts, so restart or redeploy after changing them.
+`.env.production` is intentionally excluded from Git. Netlify must provide the production value through Site configuration > Environment variables. Do not include `/api` or a trailing slash. Create React App embeds environment values when the development server or production build starts, so restart or redeploy after changing them.
 
 ## Commands
 
