@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
-import { Minus, Plus, ShoppingCart, MessageCircle } from 'lucide-react';
-import axiosInstance from '../utils/axiosInstance';
+import { Minus, Plus, ShoppingCart, MessageCircle, X } from 'lucide-react';
+import { getProductById, getRelatedProducts } from '../services/productApi';
+import ProductCard from '../components/ProductCard';
+import LoadingState from '../components/LoadingState';
+import ErrorState from '../components/ErrorState';
+import { formatCurrency } from '../utils/currency';
+import { buildProductEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [allProducts, setAllProducts] = useState([]);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -20,79 +25,59 @@ function ProductDetail() {
   const handleAddToCart = () => {
     if (product) {
       dispatch(addToCart({ ...product, quantity }));
-      // Optional: Add a toast notification here
     }
   };
 
   const handleEnquire = () => {
     if (!product) return;
-    const message = `Hello 3MT, I would like to enquire about this product:\n\nProduct Name: ${product.name}\nQuantity: ${quantity}\nEstimated Price: ₹${product.price * quantity}\n`;
-    const whatsappUrl = `https://wa.me/919322232809?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    openWhatsApp(buildProductEnquiryMessage(product, quantity));
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
     setLoading(true);
     setError(null);
+    setProduct(null);
+    setRelatedProducts([]);
+    setQuantity(1);
+    setIsFullScreen(false);
     window.scrollTo(0, 0);
 
     Promise.all([
-      axiosInstance.get(`/api/products/${id}`),
-      axiosInstance.get('/api/products')
+      getProductById(id, { signal: controller.signal }),
+      getRelatedProducts(id, { limit: 30 }, { signal: controller.signal })
     ])
-      .then(([resProduct, resAll]) => {
-        setProduct(resProduct.data);
-        if (resProduct.data.images && resProduct.data.images.length > 0) {
-          setSelectedImage(resProduct.data.images[0].url);
-        } else {
-          setSelectedImage(null);
-        }
-        setAllProducts(resAll.data);
+      .then(([productData, relatedProductData]) => {
+        setProduct(productData);
+        setSelectedImage(productData.images?.[0]?.url || null);
+        setRelatedProducts(relatedProductData);
         setLoading(false);
       })
       .catch(err => {
-        setError(err.message || 'Failed to fetch product details');
-        setLoading(false);
+        if (err.code !== 'ERR_CANCELED') {
+          setError(err.message || 'Failed to fetch product details');
+          setLoading(false);
+        }
       });
+
+    return () => controller.abort();
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-      </div>
-    );
+    return <LoadingState fullScreen label="Loading product details" />;
   }
 
   if (error || !product) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center p-10 text-center bg-gray-50">
-        <h2 className="text-2xl text-red-500 font-bold mb-6">{error || 'Product not found'}</h2>
-        <button onClick={() => navigate('/products')} className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-900 transition">
-          Back to Products
-        </button>
-      </div>
+      <ErrorState
+        fullScreen
+        message={error || 'Product not found'}
+        actionLabel="Back to Products"
+        onAction={() => navigate('/products')}
+      />
     );
   }
-
-  // --- Related Products Logic ---
-  const getMachineCategories = (prod) => {
-    if (!prod) return [];
-    if (prod.type?.toLowerCase().trim() === 'machine') {
-      return prod.category ? [prod.category.trim().toLowerCase()] : [];
-    } else {
-      return prod.subCategory ? prod.subCategory.split(',').map(s => s.trim().toLowerCase()) : [];
-    }
-  };
-
-  const pCategories = getMachineCategories(product);
-
-  const relatedProducts = allProducts.filter(r => {
-    if (r._id === product._id) return false;
-    const rCategories = getMachineCategories(r);
-    // Intersection: check if any category matches
-    return pCategories.some(c => rCategories.includes(c));
-  });
 
   const relatedByType = {
     machine: [],
@@ -108,51 +93,6 @@ function ProductDetail() {
       relatedByType[t].push(r);
     }
   });
-
-  const ProductCard = ({ prod }) => (
-    <Link to={`/product/${prod._id}`} className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-gray-100 overflow-hidden h-full cursor-pointer block">
-      {/* Image Container */}
-      <div className="relative w-full h-40 sm:h-48 bg-gray-50/50 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-        {prod.images && prod.images.length > 0 ? (
-          <img 
-            src={prod.images[0].url} 
-            alt={prod.name} 
-            className="max-h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" 
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400">
-            <svg className="w-8 h-8 sm:w-10 sm:h-10 mb-1 sm:mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider">No Image</span>
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-3 sm:p-4 flex flex-col flex-grow">
-        <div className="flex justify-between items-start gap-1 sm:gap-2 mb-2 sm:mb-3">
-          {prod.brand && (
-            <span className="inline-block px-2 py-0.5 sm:px-2.5 sm:py-1 bg-yellow-100 text-yellow-800 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-full">
-              {prod.brand}
-            </span>
-          )}
-          <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 text-gray-600 text-[9px] sm:text-[10px] font-semibold rounded uppercase line-clamp-1 text-right">
-            {prod.category || prod.type || 'Tool'}
-          </span>
-        </div>
-        
-        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-tight mb-2 group-hover:text-yellow-600 transition-colors">
-          {prod.name}
-        </h3>
-        
-        <div className="mt-auto pt-3 sm:pt-4 flex justify-between items-end border-t border-gray-50">
-          <div className="flex flex-col">
-            <span className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Price</span>
-            <span className="text-base sm:text-xl font-extrabold text-gray-900 tracking-tight">₹{prod.price}</span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6">
@@ -191,7 +131,10 @@ function ProductDetail() {
                 <div className="flex gap-4 mt-6 overflow-x-auto pb-2 custom-scrollbar">
                   {product.images.map((img, idx) => (
                     <button
-                      key={idx}
+                      key={img.public_id || img.url || idx}
+                      type="button"
+                      aria-label={`View ${product.name} image ${idx + 1}`}
+                      aria-pressed={selectedImage === img.url}
                       onClick={() => setSelectedImage(img.url)}
                       className={`flex-shrink-0 w-20 h-20 bg-white rounded-xl border-2 p-2 overflow-hidden transition-all ${
                         selectedImage === img.url ? 'border-yellow-500 shadow-md scale-105' : 'border-gray-100 hover:border-yellow-300 opacity-70 hover:opacity-100'
@@ -234,7 +177,7 @@ function ProductDetail() {
               
               {/* Price */}
               <div className="mb-8 flex items-baseline gap-3">
-                <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">₹{product.price}</span>
+                <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">{formatCurrency(product.price)}</span>
                 <span className="text-gray-400 text-xs sm:text-sm font-bold uppercase tracking-widest">Excl. Tax</span>
               </div>
 
@@ -254,6 +197,8 @@ function ProductDetail() {
                   {/* Quantity Selector */}
                   <div className="flex items-center justify-between border-2 border-gray-200 rounded-xl bg-white sm:w-1/3">
                     <button 
+                      type="button"
+                      aria-label="Decrease quantity"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-4 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors rounded-l-xl disabled:opacity-30"
                       disabled={quantity <= 1}
@@ -262,6 +207,8 @@ function ProductDetail() {
                     </button>
                     <span className="px-2 text-xl font-black text-gray-900 w-12 text-center">{quantity}</span>
                     <button 
+                      type="button"
+                      aria-label="Increase quantity"
                       onClick={() => setQuantity(quantity + 1)}
                       className="p-4 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors rounded-r-xl"
                     >
@@ -271,6 +218,7 @@ function ProductDetail() {
                   
                   {/* Add to Cart Button */}
                   <button 
+                    type="button"
                     onClick={handleAddToCart}
                     className="flex-1 bg-gray-900 hover:bg-yellow-500 text-white hover:text-gray-900 text-lg font-black py-4 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex justify-center items-center gap-3 group"
                   >
@@ -281,6 +229,7 @@ function ProductDetail() {
 
                 {/* WhatsApp Enquire Button */}
                 <button 
+                  type="button"
                   onClick={handleEnquire}
                   className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-lg font-black py-4 rounded-xl shadow-md hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5 transition-all duration-300 flex justify-center items-center gap-3 group"
                 >
@@ -325,7 +274,7 @@ function ProductDetail() {
                       <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-4 custom-scrollbar snap-x snap-mandatory px-1">
                         {catItems.map(item => (
                           <div key={item._id} className="w-[180px] min-w-[180px] sm:w-[280px] sm:min-w-[280px] lg:w-[320px] lg:min-w-[320px] flex-shrink-0 snap-start">
-                            <ProductCard prod={item} />
+                            <ProductCard product={item} variant="compact" />
                           </div>
                         ))}
                       </div>
@@ -341,13 +290,13 @@ function ProductDetail() {
       {/* Fullscreen Lightbox Modal */}
       {isFullScreen && (
         <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 sm:p-10">
-          <button 
+          <button
+            type="button"
+            aria-label="Close image viewer"
             onClick={() => setIsFullScreen(false)}
             className="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition z-50"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-8 w-8" aria-hidden="true" />
           </button>
           
           <img 
@@ -360,7 +309,10 @@ function ProductDetail() {
             <div className="flex justify-center gap-4 overflow-x-auto max-w-full px-4 pb-4">
               {product.images.map((img, idx) => (
                 <button
-                  key={idx}
+                  key={img.public_id || img.url || idx}
+                  type="button"
+                  aria-label={`View ${product.name} image ${idx + 1}`}
+                  aria-pressed={selectedImage === img.url}
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedImage(img.url);

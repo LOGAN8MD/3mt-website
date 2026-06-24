@@ -3,12 +3,16 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search, ShoppingCart, Settings } from "lucide-react"; 
 import { useTranslation } from "react-i18next";
-import axiosInstance from "../utils/axiosInstance";
+import { searchProducts } from "../services/productApi";
+
+const SEARCH_DEBOUNCE_MS = 300;
+const MIN_SEARCH_LENGTH = 2;
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -20,15 +24,38 @@ function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch products for search autocomplete
-    axiosInstance.get('/api/products')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error("Failed to fetch products for search", err));
-  }, []);
+    const trimmedQuery = searchQuery.trim();
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    if (trimmedQuery.length < MIN_SEARCH_LENGTH) {
+      setProducts([]);
+      setIsSearching(false);
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    setProducts([]);
+    setIsSearching(true);
+
+    const timeoutId = window.setTimeout(() => {
+      searchProducts(trimmedQuery, { limit: 8 }, { signal: controller.signal })
+        .then(setProducts)
+        .catch(err => {
+          if (err.code !== 'ERR_CANCELED') {
+            setProducts([]);
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) {
+            setIsSearching(false);
+          }
+        });
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [searchQuery]);
 
   const handleSelectProduct = (id) => {
     setSearchQuery("");
@@ -59,6 +86,7 @@ function Navbar() {
             <div className="relative">
               <input 
                 type="text" 
+                aria-label={t('navbar.search_placeholder')}
                 className="w-full pl-10 pr-4 py-2 text-gray-900 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:bg-white transition-colors"
                 placeholder={t('navbar.search_placeholder')}
                 value={searchQuery}
@@ -73,11 +101,15 @@ function Navbar() {
             </div>
 
             {/* Search Dropdown */}
-            {showDropdown && searchQuery.trim() !== "" && (
+            {showDropdown && searchQuery.trim().length >= MIN_SEARCH_LENGTH && (
               <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-100 overflow-hidden z-50">
-                {filteredProducts.length > 0 ? (
+                {isSearching ? (
+                  <div className="px-4 py-6 text-center text-gray-500" role="status">
+                    <p className="text-sm">Searching products...</p>
+                  </div>
+                ) : products.length > 0 ? (
                   <ul className="max-h-72 overflow-y-auto">
-                    {filteredProducts.map(p => (
+                    {products.map(p => (
                       <li 
                         key={p._id}
                         className="px-4 py-3 hover:bg-yellow-50 cursor-pointer border-b border-gray-50 last:border-0 flex items-center gap-3 transition-colors"
@@ -124,6 +156,9 @@ function Navbar() {
 
             <div className="relative">
               <button 
+                type="button"
+                aria-label="Language settings"
+                aria-expanded={showSettings}
                 onClick={() => setShowSettings(!showSettings)} 
                 className="p-2 text-gray-200 hover:text-yellow-400 transition-colors focus:outline-none"
               >
@@ -163,6 +198,9 @@ function Navbar() {
               )}
             </Link>
             <button
+              type="button"
+              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isOpen}
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-200 hover:text-yellow-400 focus:outline-none p-2"
             >

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateQuantity } from '../redux/cartSlice';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, MessageCircle } from 'lucide-react';
+import { formatCurrency } from '../utils/currency';
+import { buildCartEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
 
 function Cart() {
   const cartItems = useSelector(state => state.cart.cartItems);
@@ -19,23 +21,15 @@ function Cart() {
     dispatch(removeFromCart(id));
   };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + Number(item.price || 0) * Number(item.quantity || 0),
+    0
+  );
 
   const handleWhatsAppEnquiry = () => {
     if (cartItems.length === 0) return;
 
-    let message = "Hello 3MT, I would like to enquire about the following products:\n\n";
-    
-    cartItems.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} - Quantity: ${item.quantity} - Price: ₹${item.price * item.quantity}\n`;
-    });
-
-    message += `\nTotal Estimated Price: ₹${calculateTotal()}`;
-    
-    const whatsappUrl = `https://wa.me/919322232809?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    openWhatsApp(buildCartEnquiryMessage(cartItems));
   };
 
   return (
@@ -68,7 +62,7 @@ function Cart() {
                       <div className="flex-1 w-full">
                         <div className="flex justify-between items-start">
                           <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">{item.name}</h3>
-                          <p className="text-lg font-bold text-gray-900 ml-4 whitespace-nowrap">₹{item.price}</p>
+                          <p className="text-lg font-bold text-gray-900 ml-4 whitespace-nowrap">{formatCurrency(item.price)}</p>
                         </div>
                         
                         <p className="text-sm text-gray-500 mt-1">{item.brand || item.category}</p>
@@ -112,13 +106,13 @@ function Cart() {
                 
                 <div className="flex justify-between text-gray-600 mb-4 text-sm">
                   <span>Subtotal ({cartItems.length} items)</span>
-                  <span className="font-medium text-gray-900">₹{calculateTotal()}</span>
+                  <span className="font-medium text-gray-900">{formatCurrency(cartTotal)}</span>
                 </div>
                 
                 <div className="border-t border-gray-100 pt-4 mb-6">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-2xl font-extrabold text-yellow-600">₹{calculateTotal()}</span>
+                    <span className="text-2xl font-extrabold text-yellow-600">{formatCurrency(cartTotal)}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Taxes and shipping calculated at checkout</p>
                 </div>

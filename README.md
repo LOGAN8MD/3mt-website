@@ -1,70 +1,58 @@
-# Getting Started with Create React App
+# 3MT Customer Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Customer-facing React application for browsing 3MT products, viewing product details, managing a cart, and sending WhatsApp enquiries.
 
-## Available Scripts
+## Requirements
 
-In the project directory, you can run:
+- Node.js 18 or newer
+- npm
+- A running `3mt_Server` instance for local product data
 
-### `npm start`
+## Environment
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The website reads the backend origin from `REACT_APP_API_BASE_URL`.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+| Context | File or setting | Value |
+| --- | --- | --- |
+| Local development | `.env.development` | `http://localhost:8080` |
+| Production build | `.env.production` | `https://threemt-server.onrender.com` |
+| Netlify | Environment variable | `REACT_APP_API_BASE_URL=https://threemt-server.onrender.com` |
 
-### `npm test`
+Do not include `/api` or a trailing slash. Create React App embeds environment values when the development server or production build starts, so restart or redeploy after changing them.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Commands
 
-### `npm run build`
+```bash
+npm install
+npm start
+npm run test:ci
+npm run build
+npm run verify
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `npm start` runs the local website at `http://localhost:3000`.
+- `npm run test:ci` runs the non-watch utility tests.
+- `npm run build` creates the production bundle.
+- `npm run verify` runs tests followed by the production build.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Deployment
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The production site is deployed through Netlify from GitHub:
 
-### `npm run eject`
+`https://3mt-machine-tools.netlify.app/`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Netlify should use:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Build command: `npm run build`
+- Publish directory: `build`
+- Environment variable: `REACT_APP_API_BASE_URL=https://threemt-server.onrender.com`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The backend CORS allowlist must include the exact Netlify origin without a path or trailing slash.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Main Source Areas
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `src/components/` - Shared navigation, product cards, and request states.
+- `src/pages/` - Customer routes and workflows.
+- `src/services/productApi.js` - Product API calls.
+- `src/redux/` - Cart state.
+- `src/utils/` - Axios, currency, and WhatsApp helpers.

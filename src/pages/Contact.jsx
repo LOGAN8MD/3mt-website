@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Phone, MessageCircle, MapPin, Mail, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+  BUSINESS_CONTACT,
+  buildGeneralEnquiryMessage,
+  buildWhatsAppUrl,
+  getTelephoneUrl,
+} from "../utils/whatsapp";
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -38,10 +44,10 @@ export default function Contact() {
           <p className="flex items-center gap-2">
             <Phone className="w-5 h-5 text-green-600" />
             <a
-              href="tel:+919322232809"
+              href={getTelephoneUrl()}
               className="text-blue-600 font-medium hover:underline"
             >
-              +91 9322232809
+              {BUSINESS_CONTACT.displayPhone}
             </a>
           </p>
 
@@ -65,13 +71,13 @@ export default function Contact() {
           {/* Call & WhatsApp Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <a
-              href="tel:+919322232809"
+              href={getTelephoneUrl()}
               className="flex items-center justify-center gap-2 bg-green-600 text-white px-5 py-3 rounded-lg shadow-md hover:bg-green-700 transition font-semibold"
             >
               <Phone className="w-5 h-5" /> {t('contact.call_us')}
             </a>
             <a
-              href="https://wa.me/919322232809?text=Hello%20Team%203MT,%20I%20want%20to%20know%20more%20about%20your%20products%20and%20services."
+              href={buildWhatsAppUrl(buildGeneralEnquiryMessage())}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-lg shadow-md hover:bg-green-500 transition font-semibold"
