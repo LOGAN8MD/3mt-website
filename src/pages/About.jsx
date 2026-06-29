@@ -27,6 +27,8 @@ export default function About() {
           <img
             src="https://3mt.netlify.app/images/gallery/g1.jpg"
             alt="3MT Machine Tools"
+            loading="lazy"
+            decoding="async"
             className="rounded-lg shadow-lg"
           />
         </div>
@@ -138,6 +140,8 @@ export default function About() {
             <img
               src="https://3mt.netlify.app/images/gallery/g2.jpg"
               alt="Our Work"
+              loading="lazy"
+              decoding="async"
               className="rounded-lg shadow-lg"
             />
           </div>

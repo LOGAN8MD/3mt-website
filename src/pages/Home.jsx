@@ -119,6 +119,8 @@ function Home() {
           <img
             src="https://3mt.netlify.app/images/drill/d3.jpg"
             alt="Drill Machine"
+            loading="lazy"
+            decoding="async"
             className="max-h-48 object-contain"
           />
         </div>
@@ -136,6 +138,8 @@ function Home() {
           <img
             src="https://3mt.netlify.app/images/grinder/g4.jpg"
             alt="Grinder"
+            loading="lazy"
+            decoding="async"
             className="max-h-48 object-contain"
           />
         </div>
@@ -153,6 +157,8 @@ function Home() {
           <img
             src="https://3mt.netlify.app/images/cutter/c1.jpg"
             alt="Cutter"
+            loading="lazy"
+            decoding="async"
             className="max-h-48 object-contain"
           />
         </div>
@@ -170,6 +176,8 @@ function Home() {
           <img
             src="https://lh3.googleusercontent.com/p/AF1QipNdmhwdXmTASz-jBEeO1YuueXIskP9F5oojl2Q2=w141-h101-n-k-no-nu"
             alt="Breaker"
+            loading="lazy"
+            decoding="async"
             className="max-h-48 object-contain"
           />
         </div>
@@ -199,7 +207,7 @@ function Home() {
     {/* Service 2 */}
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/ios-filled/50/000000/maintenance.png" 
-           alt="Maintenance" className="w-12 h-12 mb-3" />
+           alt="Maintenance" loading="lazy" decoding="async" className="w-12 h-12 mb-3" />
       <h3 className="text-lg font-semibold">{t('home.maintenance')}</h3>
       <p className="mt-2 text-gray-700 text-sm text-center">
         {t('home.maintenance_desc')}
@@ -209,7 +217,7 @@ function Home() {
     {/* Service 3 */}
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/ios-filled/50/000000/gear.png" 
-           alt="Spare Parts" className="w-12 h-12 mb-3" />
+           alt="Spare Parts" loading="lazy" decoding="async" className="w-12 h-12 mb-3" />
       <h3 className="text-lg font-semibold">{t('home.spare_parts')}</h3>
       <p className="mt-2 text-gray-700 text-sm text-center">
         {t('home.spare_parts_desc')}
@@ -219,7 +227,7 @@ function Home() {
     {/* Service 4 */}
     <div className="p-6 bg-blue-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex flex-col items-center">
       <img src="https://img.icons8.com/?size=100&id=vB2aQzp05MIo&format=png&color=000000" 
-           alt="Emergency Support" className="w-12 h-12 mb-3" />
+           alt="Emergency Support" loading="lazy" decoding="async" className="w-12 h-12 mb-3" />
       <h3 className="text-lg font-semibold">{t('home.emergency')}</h3>
       <p className="mt-2 text-gray-700 text-sm text-center">
         {t('home.emergency_desc')}

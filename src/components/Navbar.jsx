@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search, ShoppingCart, Settings } from "lucide-react"; 
 import { useTranslation } from "react-i18next";
 import { searchProducts } from "../services/productApi";
+import { getOptimizedImageUrl } from "../utils/cloudinaryImage";
 
 const SEARCH_DEBOUNCE_MS = 300;
 const MIN_SEARCH_LENGTH = 2;
@@ -116,7 +117,13 @@ function Navbar() {
                         onClick={() => handleSelectProduct(p._id)}
                       >
                         {p.images && p.images.length > 0 ? (
-                          <img src={p.images[0].url} alt={p.name} className="w-10 h-10 object-contain rounded bg-gray-50 p-1 mix-blend-multiply" />
+                          <img
+                            src={getOptimizedImageUrl(p.images[0].url, { width: 96 })}
+                            alt={p.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-10 h-10 object-contain rounded bg-gray-50 p-1 mix-blend-multiply"
+                          />
                         ) : (
                           <div className="w-10 h-10 bg-gray-100 rounded"></div>
                         )}

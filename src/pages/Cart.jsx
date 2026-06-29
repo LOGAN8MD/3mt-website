@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { buildCartEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
+import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
 
 function Cart() {
   const cartItems = useSelector(state => state.cart.cartItems);
@@ -53,7 +54,13 @@ function Cart() {
                     <li key={item._id} className="p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
                       <div className="w-24 h-24 flex-shrink-0 bg-gray-50 rounded-lg p-2 flex items-center justify-center">
                         {item.images && item.images.length > 0 ? (
-                          <img src={item.images[0].url} alt={item.name} className="max-h-full object-contain mix-blend-multiply" />
+                          <img
+                            src={getOptimizedImageUrl(item.images[0].url, { width: 160 })}
+                            alt={item.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="max-h-full object-contain mix-blend-multiply"
+                          />
                         ) : (
                           <span className="text-xs text-gray-400">No Image</span>
                         )}

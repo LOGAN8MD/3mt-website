@@ -1,6 +1,7 @@
 import { Image as ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../utils/currency';
+import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
 
 const variants = {
   default: {
@@ -33,7 +34,9 @@ const variants = {
 
 function ProductCard({ product, variant = 'default' }) {
   const styles = variants[variant] || variants.default;
-  const imageUrl = product.images?.[0]?.url;
+  const imageUrl = getOptimizedImageUrl(product.images?.[0]?.url, {
+    width: variant === 'compact' ? 360 : 480,
+  });
 
   return (
     <Link
@@ -45,6 +48,8 @@ function ProductCard({ product, variant = 'default' }) {
           <img
             src={imageUrl}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className="max-h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
           />
         ) : (

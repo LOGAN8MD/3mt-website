@@ -9,6 +9,7 @@ import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
 import { formatCurrency } from '../utils/currency';
 import { buildProductEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
+import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -87,6 +88,8 @@ function ProductDetail() {
     spare: []
   };
 
+  const selectedImageLarge = getOptimizedImageUrl(selectedImage, { width: 900 });
+
   relatedProducts.forEach(r => {
     const t = r.type?.toLowerCase().trim();
     if (relatedByType[t]) {
@@ -117,8 +120,10 @@ function ProductDetail() {
               >
                 {selectedImage ? (
                   <img 
-                    src={selectedImage} 
+                    src={selectedImageLarge} 
                     alt={product.name} 
+                    loading="eager"
+                    decoding="async"
                     className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" 
                   />
                 ) : (
@@ -140,7 +145,13 @@ function ProductDetail() {
                         selectedImage === img.url ? 'border-yellow-500 shadow-md scale-105' : 'border-gray-100 hover:border-yellow-300 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img.url} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                      <img
+                        src={getOptimizedImageUrl(img.url, { width: 160 })}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-contain mix-blend-multiply"
+                      />
                     </button>
                   ))}
                 </div>
@@ -300,8 +311,10 @@ function ProductDetail() {
           </button>
           
           <img 
-            src={selectedImage} 
+            src={selectedImageLarge} 
             alt={product.name} 
+            loading="eager"
+            decoding="async"
             className="max-w-full max-h-[75vh] object-contain mb-8"
           />
           
@@ -321,7 +334,13 @@ function ProductDetail() {
                     selectedImage === img.url ? 'border-yellow-500 scale-110' : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={img.url} alt={`Thumbnail ${idx}`} className="w-full h-full object-contain mix-blend-multiply" />
+                  <img
+                    src={getOptimizedImageUrl(img.url, { width: 160 })}
+                    alt={`Thumbnail ${idx}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-contain mix-blend-multiply"
+                  />
                 </button>
               ))}
             </div>
