@@ -10,11 +10,13 @@ import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import LanguagePopup from "./components/LanguagePopup";
+import ServerWakeupPopup from "./components/ServerWakeupPopup";
 
 function App() {
   return (
     <>
       <LanguagePopup />
+      <ServerWakeupPopup />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow">

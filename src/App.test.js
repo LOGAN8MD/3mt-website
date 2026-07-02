@@ -5,6 +5,11 @@ import {
   buildProductEnquiryMessage,
   buildWhatsAppUrl,
 } from './utils/whatsapp';
+import {
+  markApiRequestDelayed,
+  resetApiDelayForTests,
+  subscribeToApiDelay,
+} from './utils/apiDelayNotifier';
 
 test('formats Indian rupee values', () => {
   expect(formatCurrency(125000)).toBe('₹1,25,000');
@@ -35,4 +40,18 @@ test('keeps non-Cloudinary image URLs unchanged', () => {
   const url = 'https://example.com/products/drill.jpg';
 
   expect(getOptimizedImageUrl(url, { width: 480 })).toBe(url);
+});
+
+test('notifies when a backend request becomes delayed and clears after completion', () => {
+  const states = [];
+  const unsubscribe = subscribeToApiDelay((isDelayed) => {
+    states.push(isDelayed);
+  });
+
+  const clearDelay = markApiRequestDelayed();
+  clearDelay();
+  unsubscribe();
+  resetApiDelayForTests();
+
+  expect(states).toEqual([false, true, false]);
 });
