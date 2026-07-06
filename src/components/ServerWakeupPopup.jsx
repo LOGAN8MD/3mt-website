@@ -28,7 +28,7 @@ function ServerWakeupPopup() {
               Checking updates in our application
             </h2>
             <p className="mt-3 text-sm leading-6 text-gray-700">
-              Our server may take around 50 seconds to one minute.
+              Our server may take around 20 to 30 seconds.
               <br />
               Sorry for making you wait.
             </p>
