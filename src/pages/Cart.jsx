@@ -34,9 +34,10 @@ function Cart() {
   const handleWhatsAppEnquiry = () => {
     if (cartItems.length === 0) return;
 
-    const message = buildCartEnquiryMessage(cartItems);
+    requireAuth((authUser) => {
+      const message = buildCartEnquiryMessage(cartItems, authUser);
 
-    requireAuth(() =>
+      return (
       openTrackedWhatsAppEnquiry({
         message,
         enquiry: {
@@ -50,7 +51,8 @@ function Cart() {
           setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
         },
       })
-    );
+      );
+    });
   };
 
   return (

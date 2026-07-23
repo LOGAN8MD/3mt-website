@@ -24,14 +24,26 @@ test('formats Indian rupee values', () => {
 test('builds an encoded product enquiry URL with the configured number', () => {
   const message = buildProductEnquiryMessage(
     { name: 'Angle Grinder', price: 7500 },
-    2
+    2,
+    {
+      name: 'Rahul Mishra',
+      email: 'rahul@example.com',
+      phone: '9876543210',
+      address: '',
+    }
   );
   const url = buildWhatsAppUrl(message);
+  const decodedMessage = decodeURIComponent(url.split('?text=')[1]);
 
   expect(url).toContain(`https://wa.me/${BUSINESS_CONTACT.whatsapp}?text=`);
-  expect(decodeURIComponent(url.split('?text=')[1])).toContain(
-    'Estimated Price: ₹15,000'
-  );
+  expect(decodedMessage).toContain('Hello 3MT, I am Rahul Mishra.');
+  expect(decodedMessage).toContain('Product Details:');
+  expect(decodedMessage).toContain('Estimated Price: ₹15,000');
+  expect(decodedMessage).toContain('My Details:');
+  expect(decodedMessage).toContain('Email: rahul@example.com');
+  expect(decodedMessage).toContain('Phone: 9876543210');
+  expect(decodedMessage).not.toContain('Name: Rahul Mishra');
+  expect(decodedMessage).not.toContain('Address:');
 });
 
 test('adds Cloudinary image transformations safely', () => {

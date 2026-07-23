@@ -35,9 +35,11 @@ function ProductDetail() {
 
   const handleEnquire = () => {
     if (!product) return;
-    const message = buildProductEnquiryMessage(product, quantity);
 
-    requireAuth(() =>
+    requireAuth((authUser) => {
+      const message = buildProductEnquiryMessage(product, quantity, authUser);
+
+      return (
       openTrackedWhatsAppEnquiry({
         message,
         enquiry: {
@@ -53,7 +55,8 @@ function ProductDetail() {
           setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
         },
       })
-    );
+      );
+    });
   };
 
   useEffect(() => {
