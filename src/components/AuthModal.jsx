@@ -128,12 +128,6 @@ function AuthModal() {
           : `OTP sent to ${response.destination}`
       );
     } catch (err) {
-      if (err.response?.data?.debug) {
-        console.group('3MT registration debug');
-        console.log(err.response.data.debug);
-        console.groupEnd();
-      }
-
       setError(err.message || 'Registration failed');
     } finally {
       setIsSubmitting(false);
