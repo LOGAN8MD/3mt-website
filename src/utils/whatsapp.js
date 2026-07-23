@@ -1,9 +1,9 @@
 import { formatCurrency } from './currency';
 
 export const BUSINESS_CONTACT = Object.freeze({
-  displayPhone: '+91 9322232809',
-  telephone: '+919322232809',
-  whatsapp: '919322232809',
+  displayPhone: '+91 8286104286',
+  telephone: '+918286104286',
+  whatsapp: '918286104286',
 });
 
 export const getTelephoneUrl = () => `tel:${BUSINESS_CONTACT.telephone}`;

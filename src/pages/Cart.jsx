@@ -4,12 +4,16 @@ import { removeFromCart, updateQuantity } from '../redux/cartSlice';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
-import { buildCartEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
+import { buildCartEnquiryMessage } from '../utils/whatsapp';
 import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
+import { useAuth } from '../context/AuthContext';
+import { openTrackedWhatsAppEnquiry } from '../utils/trackedWhatsAppEnquiry';
 
 function Cart() {
   const cartItems = useSelector(state => state.cart.cartItems);
   const dispatch = useDispatch();
+  const { requireAuth } = useAuth();
+  const [enquiryNotice, setEnquiryNotice] = React.useState('');
 
   const handleQuantityChange = (id, currentQuantity, change) => {
     const newQuantity = currentQuantity + change;
@@ -30,7 +34,23 @@ function Cart() {
   const handleWhatsAppEnquiry = () => {
     if (cartItems.length === 0) return;
 
-    openWhatsApp(buildCartEnquiryMessage(cartItems));
+    const message = buildCartEnquiryMessage(cartItems);
+
+    requireAuth(() =>
+      openTrackedWhatsAppEnquiry({
+        message,
+        enquiry: {
+          source: 'cart',
+          products: cartItems.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+          })),
+        },
+        onTrackingError: () => {
+          setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
+        },
+      })
+    );
   };
 
   return (
@@ -131,6 +151,11 @@ function Cart() {
                   <MessageCircle className="w-5 h-5" />
                   Enquire via WhatsApp
                 </button>
+                {enquiryNotice && (
+                  <p className="mt-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm font-medium text-yellow-800">
+                    {enquiryNotice}
+                  </p>
+                )}
                 
                 <div className="mt-4 text-center">
                   <Link to="/products" className="text-sm text-blue-600 hover:text-blue-800 font-medium">

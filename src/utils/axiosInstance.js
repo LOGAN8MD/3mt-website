@@ -3,6 +3,7 @@ import {
   SLOW_REQUEST_DELAY_MS,
   markApiRequestDelayed,
 } from './apiDelayNotifier';
+import { getStoredAuthToken } from './authStorage';
 
 const apiBaseURL = process.env.REACT_APP_API_BASE_URL?.trim().replace(/\/+$/, '');
 
@@ -41,6 +42,12 @@ axiosInstance.interceptors.request.use((config) => {
   }, SLOW_REQUEST_DELAY_MS);
 
   config.apiDelayState = delayState;
+
+  const token = getStoredAuthToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   return config;
 });

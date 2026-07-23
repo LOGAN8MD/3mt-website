@@ -7,9 +7,11 @@ import { getProductById, getRelatedProducts } from '../services/productApi';
 import ProductCard from '../components/ProductCard';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
+import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/currency';
-import { buildProductEnquiryMessage, openWhatsApp } from '../utils/whatsapp';
+import { buildProductEnquiryMessage } from '../utils/whatsapp';
 import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
+import { openTrackedWhatsAppEnquiry } from '../utils/trackedWhatsAppEnquiry';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -21,7 +23,9 @@ function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [enquiryNotice, setEnquiryNotice] = useState('');
   const dispatch = useDispatch();
+  const { requireAuth } = useAuth();
 
   const handleAddToCart = () => {
     if (product) {
@@ -31,7 +35,25 @@ function ProductDetail() {
 
   const handleEnquire = () => {
     if (!product) return;
-    openWhatsApp(buildProductEnquiryMessage(product, quantity));
+    const message = buildProductEnquiryMessage(product, quantity);
+
+    requireAuth(() =>
+      openTrackedWhatsAppEnquiry({
+        message,
+        enquiry: {
+          source: 'product_detail',
+          products: [
+            {
+              productId: product._id,
+              quantity,
+            },
+          ],
+        },
+        onTrackingError: () => {
+          setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
+        },
+      })
+    );
   };
 
   useEffect(() => {
@@ -204,6 +226,11 @@ function ProductDetail() {
 
               {/* Actions */}
               <div className="space-y-4">
+                {enquiryNotice && (
+                  <p className="rounded-lg bg-yellow-50 px-4 py-3 text-sm font-medium text-yellow-800">
+                    {enquiryNotice}
+                  </p>
+                )}
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Quantity Selector */}
                   <div className="flex items-center justify-between border-2 border-gray-200 rounded-xl bg-white sm:w-1/3">

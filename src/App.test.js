@@ -10,6 +10,12 @@ import {
   resetApiDelayForTests,
   subscribeToApiDelay,
 } from './utils/apiDelayNotifier';
+import { openTrackedWhatsAppEnquiry } from './utils/trackedWhatsAppEnquiry';
+import { createEnquiry } from './services/enquiryApi';
+
+jest.mock('./services/enquiryApi', () => ({
+  createEnquiry: jest.fn(),
+}));
 
 test('formats Indian rupee values', () => {
   expect(formatCurrency(125000)).toBe('₹1,25,000');
@@ -54,4 +60,30 @@ test('notifies when a backend request becomes delayed and clears after completio
   resetApiDelayForTests();
 
   expect(states).toEqual([false, true, false]);
+});
+
+test('opens tracked WhatsApp enquiries directly without an empty tab first', async () => {
+  createEnquiry.mockResolvedValue({});
+  const openedWindow = { opener: {} };
+  const openSpy = jest.spyOn(window, 'open').mockReturnValue(openedWindow);
+
+  await openTrackedWhatsAppEnquiry({
+    message: 'Hello 3MT',
+    enquiry: {
+      source: 'product_detail',
+      products: [{ productId: '507f1f77bcf86cd799439011', quantity: 1 }],
+    },
+  });
+
+  expect(openSpy).toHaveBeenCalledTimes(1);
+  expect(openSpy.mock.calls[0][0]).toContain(`https://wa.me/${BUSINESS_CONTACT.whatsapp}?text=`);
+  expect(openSpy.mock.calls[0][0]).not.toBe('');
+  expect(createEnquiry).toHaveBeenCalledWith({
+    source: 'product_detail',
+    products: [{ productId: '507f1f77bcf86cd799439011', quantity: 1 }],
+    message: 'Hello 3MT',
+  });
+  expect(openedWindow.opener).toBeNull();
+
+  openSpy.mockRestore();
 });

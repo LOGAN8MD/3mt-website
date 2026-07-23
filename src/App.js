@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AuthModal from "./components/AuthModal";
 import LanguagePopup from "./components/LanguagePopup";
 import ServerWakeupPopup from "./components/ServerWakeupPopup";
 
@@ -18,6 +19,7 @@ function App() {
     <>
       <LanguagePopup />
       <ServerWakeupPopup />
+      <AuthModal />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow">

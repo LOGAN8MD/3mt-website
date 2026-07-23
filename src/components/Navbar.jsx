@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search, ShoppingCart, Settings } from "lucide-react"; 
+import { Menu, X, Search, ShoppingCart, Settings, UserCircle } from "lucide-react"; 
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
 import { searchProducts } from "../services/productApi";
 import { getOptimizedImageUrl } from "../utils/cloudinaryImage";
+import ProfileModal from "./ProfileModal";
 
 const SEARCH_DEBOUNCE_MS = 300;
 const MIN_SEARCH_LENGTH = 2;
@@ -16,8 +18,10 @@ function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   
   const { t, i18n } = useTranslation();
+  const { isAuthenticated, openAuthModal, user } = useAuth();
   
   const cartItems = useSelector(state => state.cart.cartItems);
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -71,10 +75,15 @@ function Navbar() {
     setShowSettings(false);
   };
 
+  const closeMobileMenu = () => setIsOpen(false);
+
+  const authName = user?.firstName || user?.name?.split(' ')[0] || 'Profile';
+
   return (
-    <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+    <>
+      <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
           
           {/* Brand */}
           <Link to="/" className="flex flex-col leading-tight shrink-0">
@@ -144,7 +153,7 @@ function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-6 shrink-0 relative">
+          <div className="hidden lg:flex items-center space-x-5 shrink-0 relative">
             <Link to="/" className="text-sm font-medium hover:text-yellow-400 transition-colors">{t('navbar.home')}</Link>
             <Link to="/about" className="text-sm font-medium hover:text-yellow-400 transition-colors">{t('navbar.about')}</Link>
             <Link to="/products" className="text-sm font-medium hover:text-yellow-400 transition-colors">{t('navbar.products')}</Link>
@@ -160,6 +169,34 @@ function Navbar() {
                 </span>
               )}
             </Link>
+
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => setShowProfile(true)}
+                className="flex items-center gap-2 rounded-lg border border-gray-700 px-3 py-2 text-sm font-bold text-gray-100 hover:border-yellow-400 hover:text-yellow-400"
+              >
+                <UserCircle className="h-5 w-5" />
+                {authName}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('login')}
+                  className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-bold text-gray-100 hover:border-yellow-400 hover:text-yellow-400"
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('register')}
+                  className="rounded-lg bg-yellow-500 px-3 py-2 text-sm font-black text-gray-900 hover:bg-yellow-400"
+                >
+                  Register
+                </button>
+              </div>
+            )}
 
             <div className="relative">
               <button 
@@ -196,6 +233,16 @@ function Navbar() {
 
           {/* Mobile Hamburger and Cart */}
           <div className="lg:hidden flex items-center gap-4 shrink-0">
+            {isAuthenticated ? (
+              <button
+                type="button"
+                aria-label="Open profile"
+                onClick={() => setShowProfile(true)}
+                className="p-2 text-gray-200 hover:text-yellow-400 transition-colors"
+              >
+                <UserCircle className="w-6 h-6" />
+              </button>
+            ) : null}
             <Link to="/cart" className="relative p-2 text-gray-200 hover:text-yellow-400 transition-colors">
               <ShoppingCart className="w-6 h-6" />
               {cartItemCount > 0 && (
@@ -214,38 +261,78 @@ function Navbar() {
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Dropdown Menu */}
-      {isOpen && (
-        <div className="lg:hidden bg-gray-800 px-4 pb-6 space-y-3 pt-2 shadow-inner border-t border-gray-700">
-          <Link to="/" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>{t('navbar.home')}</Link>
-          <Link to="/about" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>{t('navbar.about')}</Link>
-          <Link to="/products" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>{t('navbar.products')}</Link>
-          <Link to="/services" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>{t('navbar.services')}</Link>
-          <Link to="/contact" className="block px-3 py-2 mt-4 bg-yellow-500 text-gray-900 font-bold text-center rounded-lg hover:bg-yellow-400 transition-colors" onClick={() => setIsOpen(false)}>{t('navbar.contact')}</Link>
-          
-          <div className="pt-4 mt-4 border-t border-gray-700">
-            <p className="px-3 text-xs text-gray-400 uppercase tracking-wider mb-2">Language / भाषा</p>
-            <div className="flex gap-2 px-3">
-              <button 
-                onClick={() => handleLanguageChange('en')}
-                className={`flex-1 py-2 text-sm rounded-md transition-colors ${i18n.language === 'en' ? 'bg-yellow-500 text-gray-900 font-bold' : 'bg-gray-700 text-white'}`}
-              >
-                English
-              </button>
-              <button 
-                onClick={() => handleLanguageChange('hi')}
-                className={`flex-1 py-2 text-sm rounded-md transition-colors ${i18n.language === 'hi' ? 'bg-yellow-500 text-gray-900 font-bold' : 'bg-gray-700 text-white'}`}
-              >
-                हिन्दी
-              </button>
-            </div>
           </div>
         </div>
-      )}
-    </nav>
+
+        {/* Mobile Dropdown Menu */}
+        {isOpen && (
+          <div className="lg:hidden bg-gray-800 px-4 pb-6 space-y-3 pt-2 shadow-inner border-t border-gray-700">
+            <Link to="/" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={closeMobileMenu}>{t('navbar.home')}</Link>
+            <Link to="/about" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={closeMobileMenu}>{t('navbar.about')}</Link>
+            <Link to="/products" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={closeMobileMenu}>{t('navbar.products')}</Link>
+            <Link to="/services" className="block px-3 py-2 rounded-md hover:bg-gray-700 hover:text-yellow-400 transition-colors" onClick={closeMobileMenu}>{t('navbar.services')}</Link>
+            <Link to="/contact" className="block px-3 py-2 mt-4 bg-yellow-500 text-gray-900 font-bold text-center rounded-lg hover:bg-yellow-400 transition-colors" onClick={closeMobileMenu}>{t('navbar.contact')}</Link>
+
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-700">
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfile(true);
+                    closeMobileMenu();
+                  }}
+                  className="col-span-2 rounded-lg border border-gray-600 px-3 py-2 font-bold text-gray-100"
+                >
+                  My Profile
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openAuthModal('login');
+                      closeMobileMenu();
+                    }}
+                    className="rounded-lg border border-gray-600 px-3 py-2 font-bold text-gray-100"
+                  >
+                    Login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openAuthModal('register');
+                      closeMobileMenu();
+                    }}
+                    className="rounded-lg bg-yellow-500 px-3 py-2 font-black text-gray-900"
+                  >
+                    Register
+                  </button>
+                </>
+              )}
+            </div>
+          
+            <div className="pt-4 mt-4 border-t border-gray-700">
+              <p className="px-3 text-xs text-gray-400 uppercase tracking-wider mb-2">Language / भाषा</p>
+              <div className="flex gap-2 px-3">
+                <button 
+                  onClick={() => handleLanguageChange('en')}
+                  className={`flex-1 py-2 text-sm rounded-md transition-colors ${i18n.language === 'en' ? 'bg-yellow-500 text-gray-900 font-bold' : 'bg-gray-700 text-white'}`}
+                >
+                  English
+                </button>
+                <button 
+                  onClick={() => handleLanguageChange('hi')}
+                  className={`flex-1 py-2 text-sm rounded-md transition-colors ${i18n.language === 'hi' ? 'bg-yellow-500 text-gray-900 font-bold' : 'bg-gray-700 text-white'}`}
+                >
+                  हिन्दी
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+      <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} />
+    </>
   );
 }
 
