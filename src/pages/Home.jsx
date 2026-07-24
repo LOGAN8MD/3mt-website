@@ -114,7 +114,7 @@ function Home() {
   >
     {/* Drill */}
     <SwiperSlide>
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <Link to="/products" className="block p-6 bg-white rounded-lg shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-400">
         <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded-md">
           <img
             src="https://3mt.netlify.app/images/drill/d3.jpg"
@@ -128,12 +128,12 @@ function Home() {
         <p className="text-gray-600">
           {t('home.drill_desc')}
         </p>
-      </div>
+      </Link>
     </SwiperSlide>
 
     {/* Grinder */}
     <SwiperSlide>
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <Link to="/products" className="block p-6 bg-white rounded-lg shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-400">
         <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded-md">
           <img
             src="https://3mt.netlify.app/images/grinder/g4.jpg"
@@ -147,12 +147,12 @@ function Home() {
         <p className="text-gray-600">
           {t('home.grinder_desc')}
         </p>
-      </div>
+      </Link>
     </SwiperSlide>
 
     {/* Cutter */}
     <SwiperSlide>
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <Link to="/products" className="block p-6 bg-white rounded-lg shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-400">
         <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded-md">
           <img
             src="https://3mt.netlify.app/images/cutter/c1.jpg"
@@ -166,12 +166,12 @@ function Home() {
         <p className="text-gray-600">
           {t('home.cutter_desc')}
         </p>
-      </div>
+      </Link>
     </SwiperSlide>
 
     {/* Breaker */}
     <SwiperSlide>
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <Link to="/products" className="block p-6 bg-white rounded-lg shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-400">
         <div className="w-full h-48 flex items-center justify-center bg-gray-100 rounded-md">
           <img
             src="https://lh3.googleusercontent.com/p/AF1QipNdmhwdXmTASz-jBEeO1YuueXIskP9F5oojl2Q2=w141-h101-n-k-no-nu"
@@ -185,7 +185,7 @@ function Home() {
         <p className="text-gray-600">
           {t('home.breaker_desc')}
         </p>
-      </div>
+      </Link>
     </SwiperSlide>
   </Swiper>
 </div>
