@@ -79,6 +79,71 @@ function Navbar() {
 
   const authName = user?.firstName || user?.name?.split(' ')[0] || 'Profile';
 
+  const renderSearchBox = (wrapperClassName = '') => (
+    <div className={`relative ${wrapperClassName}`}>
+      <div className="relative">
+        <input
+          type="text"
+          aria-label={t('navbar.search_placeholder')}
+          className="w-full rounded-lg bg-gray-100 py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          placeholder={t('navbar.search_placeholder')}
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setShowDropdown(true);
+          }}
+          onFocus={() => setShowDropdown(true)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        />
+        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+      </div>
+
+      {showDropdown && searchQuery.trim().length >= MIN_SEARCH_LENGTH && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-2xl">
+          {isSearching ? (
+            <div className="px-4 py-6 text-center text-gray-500" role="status">
+              <p className="text-sm">Searching products...</p>
+            </div>
+          ) : products.length > 0 ? (
+            <ul className="max-h-[70vh] overflow-y-auto sm:max-h-72">
+              {products.map(p => (
+                <li
+                  key={p._id}
+                  className="flex min-h-[76px] cursor-pointer items-center gap-3 border-b border-gray-50 px-3 py-3 transition-colors last:border-0 hover:bg-yellow-50 sm:min-h-[68px] sm:px-4"
+                  onClick={() => handleSelectProduct(p._id)}
+                >
+                  {p.images && p.images.length > 0 ? (
+                    <img
+                      src={getOptimizedImageUrl(p.images[0].url, { width: 128 })}
+                      alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-14 w-14 shrink-0 rounded bg-gray-50 object-contain p-1 mix-blend-multiply sm:h-12 sm:w-12"
+                    />
+                  ) : (
+                    <div className="h-14 w-14 shrink-0 rounded bg-gray-100 sm:h-12 sm:w-12" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold leading-5 text-gray-800">
+                      {p.name}
+                    </span>
+                    <span className="mt-1 block truncate text-xs text-gray-500">
+                      {p.category || p.type || 'Product'}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="px-4 py-6 text-center text-gray-500">
+              <p className="text-sm">{t('navbar.no_products')} "{searchQuery}"</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
@@ -91,66 +156,8 @@ function Navbar() {
             <span className="text-sm text-gray-300 hidden sm:block">{t('navbar.machine_tools')}</span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="flex-1 mx-4 md:mx-8 max-w-xl relative">
-            <div className="relative">
-              <input 
-                type="text" 
-                aria-label={t('navbar.search_placeholder')}
-                className="w-full pl-10 pr-4 py-2 text-gray-900 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:bg-white transition-colors"
-                placeholder={t('navbar.search_placeholder')}
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-              />
-              <Search className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            </div>
-
-            {/* Search Dropdown */}
-            {showDropdown && searchQuery.trim().length >= MIN_SEARCH_LENGTH && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-100 overflow-hidden z-50">
-                {isSearching ? (
-                  <div className="px-4 py-6 text-center text-gray-500" role="status">
-                    <p className="text-sm">Searching products...</p>
-                  </div>
-                ) : products.length > 0 ? (
-                  <ul className="max-h-72 overflow-y-auto">
-                    {products.map(p => (
-                      <li 
-                        key={p._id}
-                        className="px-4 py-3 hover:bg-yellow-50 cursor-pointer border-b border-gray-50 last:border-0 flex items-center gap-3 transition-colors"
-                        onClick={() => handleSelectProduct(p._id)}
-                      >
-                        {p.images && p.images.length > 0 ? (
-                          <img
-                            src={getOptimizedImageUrl(p.images[0].url, { width: 96 })}
-                            alt={p.name}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-10 h-10 object-contain rounded bg-gray-50 p-1 mix-blend-multiply"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 bg-gray-100 rounded"></div>
-                        )}
-                        <div className="flex flex-col">
-                          <span className="text-gray-800 font-medium text-sm line-clamp-1">{p.name}</span>
-                          <span className="text-xs text-gray-500">{p.category || p.type}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="px-4 py-6 text-center text-gray-500">
-                    <p className="text-sm">{t('navbar.no_products')} "{searchQuery}"</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Desktop Search Bar */}
+          {renderSearchBox('mx-4 hidden max-w-xl flex-1 md:mx-8 lg:block')}
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-5 shrink-0 relative">
@@ -262,6 +269,9 @@ function Navbar() {
             </button>
           </div>
           </div>
+
+          {/* Mobile Search Bar */}
+          {renderSearchBox('pb-4 lg:hidden')}
         </div>
 
         {/* Mobile Dropdown Menu */}
