@@ -10,6 +10,10 @@ import {
   resetApiDelayForTests,
   subscribeToApiDelay,
 } from './utils/apiDelayNotifier';
+import {
+  getStoredCartItems,
+  storeCartItems,
+} from './utils/cartStorage';
 import { openTrackedWhatsAppEnquiry } from './utils/trackedWhatsAppEnquiry';
 import { createEnquiry } from './services/enquiryApi';
 
@@ -72,6 +76,18 @@ test('notifies when a backend request becomes delayed and clears after completio
   resetApiDelayForTests();
 
   expect(states).toEqual([false, true, false]);
+});
+
+test('stores and restores cart items from localStorage', () => {
+  const cartItems = [{ _id: 'product-1', name: 'Drill', quantity: 2 }];
+
+  storeCartItems(cartItems);
+
+  expect(getStoredCartItems()).toEqual(cartItems);
+
+  storeCartItems([]);
+
+  expect(getStoredCartItems()).toEqual([]);
 });
 
 test('opens tracked WhatsApp enquiries directly without an empty tab first', async () => {
