@@ -94,6 +94,7 @@ test('opens tracked WhatsApp enquiries directly without an empty tab first', asy
   createEnquiry.mockResolvedValue({});
   const openedWindow = { opener: {} };
   const openSpy = jest.spyOn(window, 'open').mockReturnValue(openedWindow);
+  const onTracked = jest.fn();
 
   const result = await openTrackedWhatsAppEnquiry({
     message: 'Hello 3MT',
@@ -101,6 +102,7 @@ test('opens tracked WhatsApp enquiries directly without an empty tab first', asy
       source: 'product_detail',
       products: [{ productId: '507f1f77bcf86cd799439011', quantity: 1 }],
     },
+    onTracked,
   });
 
   expect(result.opened).toBe(true);
@@ -113,6 +115,30 @@ test('opens tracked WhatsApp enquiries directly without an empty tab first', asy
     message: 'Hello 3MT',
   });
   expect(openedWindow.opener).toBeNull();
+  expect(onTracked).toHaveBeenCalledTimes(1);
+
+  openSpy.mockRestore();
+});
+
+test('does not run tracked callback when enquiry save fails', async () => {
+  createEnquiry.mockRejectedValue(new Error('Save failed'));
+  const openedWindow = { opener: {} };
+  const openSpy = jest.spyOn(window, 'open').mockReturnValue(openedWindow);
+  const onTracked = jest.fn();
+  const onTrackingError = jest.fn();
+
+  await openTrackedWhatsAppEnquiry({
+    message: 'Hello 3MT',
+    enquiry: {
+      source: 'cart',
+      products: [{ productId: '507f1f77bcf86cd799439011', quantity: 1 }],
+    },
+    onTracked,
+    onTrackingError,
+  });
+
+  expect(onTracked).not.toHaveBeenCalled();
+  expect(onTrackingError).toHaveBeenCalledTimes(1);
 
   openSpy.mockRestore();
 });

@@ -51,14 +51,16 @@ function Cart() {
             quantity: item.quantity,
           })),
         },
-        onOpened: () => {
+        onTracked: () => {
           dispatch(clearCart());
           setEnquiryNoticeType('success');
-          setEnquiryNotice('WhatsApp enquiry opened successfully. Your cart has been cleared.');
+          setEnquiryNotice('Your enquiry was saved successfully. Your cart has been cleared.');
         },
         onTrackingError: () => {
           setEnquiryNoticeType('warning');
-          setEnquiryNotice('WhatsApp opened and your cart was cleared, but the enquiry could not be saved right now.');
+          setEnquiryNotice(
+            'WhatsApp opened, but the enquiry could not be saved right now. Your cart has been kept. Please connect via call or WhatsApp message from the Contact Us section and inform the 3MT team.'
+          );
         },
       })
       );

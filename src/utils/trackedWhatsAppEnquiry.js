@@ -5,6 +5,7 @@ export const openTrackedWhatsAppEnquiry = async ({
   enquiry,
   message,
   onOpened,
+  onTracked,
   onTrackingError,
 }) => {
   const whatsappUrl = buildWhatsAppUrl(message);
@@ -22,6 +23,9 @@ export const openTrackedWhatsAppEnquiry = async ({
       ...enquiry,
       message,
     });
+    if (onTracked) {
+      onTracked();
+    }
   } catch (err) {
     if (onTrackingError) {
       onTrackingError(err);
