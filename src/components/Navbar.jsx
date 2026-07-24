@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search, ShoppingCart, Settings, UserCircle } from "lucide-react"; 
@@ -19,6 +19,8 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const mobileSearchInputRef = useRef(null);
   
   const { t, i18n } = useTranslation();
   const { isAuthenticated, openAuthModal, user } = useAuth();
@@ -62,9 +64,22 @@ function Navbar() {
     };
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (!isMobileSearchOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.setTimeout(() => mobileSearchInputRef.current?.focus(), 0);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMobileSearchOpen]);
+
   const handleSelectProduct = (id) => {
     setSearchQuery("");
     setShowDropdown(false);
+    setIsMobileSearchOpen(false);
     setIsOpen(false);
     navigate(`/product/${id}`);
   };
@@ -78,6 +93,67 @@ function Navbar() {
   const closeMobileMenu = () => setIsOpen(false);
 
   const authName = user?.firstName || user?.name?.split(' ')[0] || 'Profile';
+
+  const openMobileSearch = () => {
+    setIsOpen(false);
+    setShowDropdown(true);
+    setIsMobileSearchOpen(true);
+  };
+
+  const closeMobileSearch = () => {
+    setShowDropdown(false);
+    setIsMobileSearchOpen(false);
+  };
+
+  const renderSearchResults = (listClassName = 'max-h-[70vh] overflow-y-auto sm:max-h-72') => {
+    if (isSearching) {
+      return (
+        <div className="px-4 py-6 text-center text-gray-500" role="status">
+          <p className="text-sm">Searching products...</p>
+        </div>
+      );
+    }
+
+    if (products.length > 0) {
+      return (
+        <ul className={listClassName}>
+          {products.map(p => (
+            <li
+              key={p._id}
+              className="flex min-h-[76px] cursor-pointer items-center gap-3 border-b border-gray-50 px-3 py-3 transition-colors last:border-0 hover:bg-yellow-50 sm:min-h-[68px] sm:px-4"
+              onClick={() => handleSelectProduct(p._id)}
+            >
+              {p.images && p.images.length > 0 ? (
+                <img
+                  src={getOptimizedImageUrl(p.images[0].url, { width: 128 })}
+                  alt={p.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-14 w-14 shrink-0 rounded bg-gray-50 object-contain p-1 mix-blend-multiply sm:h-12 sm:w-12"
+                />
+              ) : (
+                <div className="h-14 w-14 shrink-0 rounded bg-gray-100 sm:h-12 sm:w-12" />
+              )}
+              <div className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold leading-5 text-gray-800">
+                  {p.name}
+                </span>
+                <span className="mt-1 block truncate text-xs text-gray-500">
+                  {p.category || p.type || 'Product'}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    return (
+      <div className="px-4 py-6 text-center text-gray-500">
+        <p className="text-sm">{t('navbar.no_products')} "{searchQuery}"</p>
+      </div>
+    );
+  };
 
   const renderSearchBox = (wrapperClassName = '') => (
     <div className={`relative ${wrapperClassName}`}>
@@ -100,45 +176,7 @@ function Navbar() {
 
       {showDropdown && searchQuery.trim().length >= MIN_SEARCH_LENGTH && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-2xl">
-          {isSearching ? (
-            <div className="px-4 py-6 text-center text-gray-500" role="status">
-              <p className="text-sm">Searching products...</p>
-            </div>
-          ) : products.length > 0 ? (
-            <ul className="max-h-[70vh] overflow-y-auto sm:max-h-72">
-              {products.map(p => (
-                <li
-                  key={p._id}
-                  className="flex min-h-[76px] cursor-pointer items-center gap-3 border-b border-gray-50 px-3 py-3 transition-colors last:border-0 hover:bg-yellow-50 sm:min-h-[68px] sm:px-4"
-                  onClick={() => handleSelectProduct(p._id)}
-                >
-                  {p.images && p.images.length > 0 ? (
-                    <img
-                      src={getOptimizedImageUrl(p.images[0].url, { width: 128 })}
-                      alt={p.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-14 w-14 shrink-0 rounded bg-gray-50 object-contain p-1 mix-blend-multiply sm:h-12 sm:w-12"
-                    />
-                  ) : (
-                    <div className="h-14 w-14 shrink-0 rounded bg-gray-100 sm:h-12 sm:w-12" />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold leading-5 text-gray-800">
-                      {p.name}
-                    </span>
-                    <span className="mt-1 block truncate text-xs text-gray-500">
-                      {p.category || p.type || 'Product'}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="px-4 py-6 text-center text-gray-500">
-              <p className="text-sm">{t('navbar.no_products')} "{searchQuery}"</p>
-            </div>
-          )}
+          {renderSearchResults()}
         </div>
       )}
     </div>
@@ -240,6 +278,15 @@ function Navbar() {
 
           {/* Mobile Hamburger and Cart */}
           <div className="lg:hidden flex items-center gap-4 shrink-0">
+            <button
+              type="button"
+              aria-label="Open product search"
+              onClick={openMobileSearch}
+              className="flex items-center gap-1.5 rounded-lg border border-gray-700 px-2.5 py-2 text-sm font-bold text-gray-100 hover:border-yellow-400 hover:text-yellow-400"
+            >
+              <Search className="h-4 w-4" />
+              Search
+            </button>
             {isAuthenticated ? (
               <button
                 type="button"
@@ -269,9 +316,6 @@ function Navbar() {
             </button>
           </div>
           </div>
-
-          {/* Mobile Search Bar */}
-          {renderSearchBox('pb-4 lg:hidden')}
         </div>
 
         {/* Mobile Dropdown Menu */}
@@ -341,6 +385,52 @@ function Navbar() {
           </div>
         )}
       </nav>
+      {isMobileSearchOpen && (
+        <div className="fixed inset-0 z-[60] bg-white text-gray-900 lg:hidden">
+          <div className="flex h-full flex-col">
+            <div className="border-b border-gray-200 bg-gray-900 px-4 py-4 text-white">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-black text-yellow-400">Search Products</h2>
+                <button
+                  type="button"
+                  aria-label="Close product search"
+                  onClick={closeMobileSearch}
+                  className="rounded-lg p-2 text-gray-200 hover:bg-gray-800 hover:text-yellow-400"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  ref={mobileSearchInputRef}
+                  type="text"
+                  aria-label={t('navbar.search_placeholder')}
+                  className="w-full rounded-lg bg-white py-3 pl-11 pr-4 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  placeholder={t('navbar.search_placeholder')}
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                />
+                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-4">
+              {searchQuery.trim().length < MIN_SEARCH_LENGTH ? (
+                <div className="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-8 text-center text-gray-500">
+                  <p className="text-sm font-medium">Type at least 2 characters to search products.</p>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-lg border border-gray-100 bg-white shadow-lg">
+                  {renderSearchResults('max-h-none overflow-visible')}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} />
     </>
   );
