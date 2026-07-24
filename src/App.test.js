@@ -79,7 +79,7 @@ test('opens tracked WhatsApp enquiries directly without an empty tab first', asy
   const openedWindow = { opener: {} };
   const openSpy = jest.spyOn(window, 'open').mockReturnValue(openedWindow);
 
-  await openTrackedWhatsAppEnquiry({
+  const result = await openTrackedWhatsAppEnquiry({
     message: 'Hello 3MT',
     enquiry: {
       source: 'product_detail',
@@ -87,6 +87,7 @@ test('opens tracked WhatsApp enquiries directly without an empty tab first', asy
     },
   });
 
+  expect(result.opened).toBe(true);
   expect(openSpy).toHaveBeenCalledTimes(1);
   expect(openSpy.mock.calls[0][0]).toContain(`https://wa.me/${BUSINESS_CONTACT.whatsapp}?text=`);
   expect(openSpy.mock.calls[0][0]).not.toBe('');

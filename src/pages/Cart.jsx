@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, updateQuantity } from '../redux/cartSlice';
+import { clearCart, removeFromCart, updateQuantity } from '../redux/cartSlice';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
@@ -14,6 +14,7 @@ function Cart() {
   const dispatch = useDispatch();
   const { requireAuth } = useAuth();
   const [enquiryNotice, setEnquiryNotice] = React.useState('');
+  const [enquiryNoticeType, setEnquiryNoticeType] = React.useState('success');
 
   const handleQuantityChange = (id, currentQuantity, change) => {
     const newQuantity = currentQuantity + change;
@@ -34,6 +35,9 @@ function Cart() {
   const handleWhatsAppEnquiry = () => {
     if (cartItems.length === 0) return;
 
+    setEnquiryNotice('');
+    setEnquiryNoticeType('success');
+
     requireAuth((authUser) => {
       const message = buildCartEnquiryMessage(cartItems, authUser);
 
@@ -47,8 +51,14 @@ function Cart() {
             quantity: item.quantity,
           })),
         },
+        onOpened: () => {
+          dispatch(clearCart());
+          setEnquiryNoticeType('success');
+          setEnquiryNotice('WhatsApp enquiry opened successfully. Your cart has been cleared.');
+        },
         onTrackingError: () => {
-          setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
+          setEnquiryNoticeType('warning');
+          setEnquiryNotice('WhatsApp opened and your cart was cleared, but the enquiry could not be saved right now.');
         },
       })
       );
@@ -63,6 +73,15 @@ function Cart() {
         {cartItems.length === 0 ? (
           <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center">
             <h2 className="text-xl text-gray-500 mb-6">Your cart is currently empty.</h2>
+            {enquiryNotice && (
+              <p className={`mb-6 rounded-lg px-4 py-3 text-sm font-semibold ${
+                enquiryNoticeType === 'warning'
+                  ? 'bg-yellow-50 text-yellow-800'
+                  : 'bg-green-50 text-green-800'
+              }`}>
+                {enquiryNotice}
+              </p>
+            )}
             <Link to="/products" className="inline-block px-6 py-3 bg-yellow-500 text-gray-900 font-bold rounded-lg hover:bg-yellow-400 transition-colors">
               Continue Shopping
             </Link>
@@ -154,7 +173,11 @@ function Cart() {
                   Enquire via WhatsApp
                 </button>
                 {enquiryNotice && (
-                  <p className="mt-3 rounded-lg bg-yellow-50 px-3 py-2 text-sm font-medium text-yellow-800">
+                  <p className={`mt-3 rounded-lg px-3 py-2 text-sm font-medium ${
+                    enquiryNoticeType === 'warning'
+                      ? 'bg-yellow-50 text-yellow-800'
+                      : 'bg-green-50 text-green-800'
+                  }`}>
                     {enquiryNotice}
                   </p>
                 )}
