@@ -9,6 +9,13 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    consumeEnquiredItems: (state, action) => {
+      for (const sent of action.payload) {
+        const item = state.cartItems.find((entry) => entry._id === sent._id);
+        if (item) item.quantity = Math.max(0, item.quantity - sent.quantity);
+      }
+      state.cartItems = state.cartItems.filter((item) => item.quantity > 0);
+    },
     addToCart: (state, action) => {
       const existingItem = state.cartItems.find(item => item._id === action.payload._id);
       if (existingItem) {
@@ -32,6 +39,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart, consumeEnquiredItems } = cartSlice.actions;
 
 export default cartSlice.reducer;

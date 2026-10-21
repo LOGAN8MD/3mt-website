@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
 import { Minus, Plus, ShoppingCart, MessageCircle, X } from 'lucide-react';
 import { getProductById, getRelatedProducts } from '../services/productApi';
@@ -9,9 +9,9 @@ import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/currency';
-import { buildProductEnquiryMessage } from '../utils/whatsapp';
 import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
-import { openTrackedWhatsAppEnquiry } from '../utils/trackedWhatsAppEnquiry';
+import { useEnquiryConfirmation } from '../components/EnquiryConfirmation';
+import { getProductActions } from '../utils/productActions';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -23,37 +23,42 @@ function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [intent, setIntent] = useState('sale');
+  const cartQuantity = useSelector((state) => state.cart.cartItems.find((item) => item._id === id)?.quantity || 0);
+  const actions = getProductActions(product, intent, cartQuantity);
   const [enquiryNotice, setEnquiryNotice] = useState('');
   const dispatch = useDispatch();
   const { requireAuth } = useAuth();
+  const { prepare, confirmation, busy } = useEnquiryConfirmation();
 
   const handleAddToCart = () => {
-    if (product) {
+    if (product && actions.canAdd && quantity <= actions.remaining) {
       dispatch(addToCart({ ...product, quantity }));
+      setEnquiryNotice('Added to cart.');
     }
   };
 
   const handleEnquire = () => {
-    if (!product) return;
+    if (!product || !actions.canEnquire || (intent === 'sale' && quantity > actions.remaining)) return;
 
     requireAuth((authUser) => {
-      const message = buildProductEnquiryMessage(product, quantity, authUser);
-
       return (
-      openTrackedWhatsAppEnquiry({
-        message,
+      prepare({
+        customer: authUser,
         enquiry: {
           source: 'product_detail',
           products: [
             {
               productId: product._id,
-              quantity,
+              quantity: intent === 'rent' ? 1 : quantity,
+              intent,
             },
           ],
         },
         onTrackingError: () => {
           setEnquiryNotice('WhatsApp is opening, but the enquiry could not be saved right now.');
         },
+        onValidationError: (error) => setEnquiryNotice(error.message || 'Unable to check availability. Please try again.'),
       })
       );
     });
@@ -67,6 +72,8 @@ function ProductDetail() {
     setProduct(null);
     setRelatedProducts([]);
     setQuantity(1);
+    setIntent('sale');
+    setEnquiryNotice('');
     setIsFullScreen(false);
     window.scrollTo(0, 0);
 
@@ -76,6 +83,7 @@ function ProductDetail() {
     ])
       .then(([productData, relatedProductData]) => {
         setProduct(productData);
+        setIntent(productData.availabilityType === 'rent' || (productData.availabilityStatus === 'on_rent' && productData.availabilityType === 'both') ? 'rent' : 'sale');
         setSelectedImage(productData.images?.[0]?.url || null);
         setRelatedProducts(relatedProductData);
         setLoading(false);
@@ -114,6 +122,10 @@ function ProductDetail() {
   };
 
   const selectedImageLarge = getOptimizedImageUrl(selectedImage, { width: 900 });
+  const offer = product.availabilityType || 'sale';
+  const statusLabel = ({ available: 'Available', on_rent: 'Currently on rent', sold: 'Sold', unavailable: 'Unavailable' })[product.availabilityStatus || 'available'] || 'Unavailable';
+  const priceLabel = (value) => value !== undefined && value !== null && value !== '' && Number.isFinite(Number(value)) ? formatCurrency(value) : 'Price on enquiry';
+  const availableDate = product.availableFrom ? new Date(product.availableFrom) : null;
 
   relatedProducts.forEach(r => {
     const t = r.type?.toLowerCase().trim();
@@ -124,6 +136,7 @@ function ProductDetail() {
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6">
+      {confirmation}
       <div className="max-w-4xl mx-auto">
         {/* Main Product Section */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-6 md:p-10 lg:p-12 border border-gray-100 mb-16">
@@ -184,7 +197,7 @@ function ProductDetail() {
             </div>
 
             {/* Right Column: Product Details */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center">
+            <div className="w-full min-w-0 lg:w-1/2 flex flex-col justify-center">
               
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-6">
@@ -199,7 +212,7 @@ function ProductDetail() {
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-[1.1] tracking-tight">
+              <h1 className="text-2xl sm:text-3xl break-words font-extrabold text-gray-900 mb-6 leading-tight">
                 {product.name}
               </h1>
 
@@ -212,9 +225,16 @@ function ProductDetail() {
               )}
               
               {/* Price */}
-              <div className="mb-8 flex items-baseline gap-3">
-                <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">{formatCurrency(product.price)}</span>
-                <span className="text-gray-400 text-xs sm:text-sm font-bold uppercase tracking-widest">Excl. Tax</span>
+              <div className="mb-8 space-y-3 break-words">
+                <p className="font-semibold">{product.condition === 'used' ? 'Second-Hand' : 'New'} · {statusLabel}</p>
+                {['sale', 'both'].includes(offer) && <p>Sale price: <strong>{priceLabel(product.price)}</strong> <span className="text-sm text-gray-500">Excl. Tax</span></p>}
+                {['rent', 'both'].includes(offer) && <>
+                  <p>Rental rate: <strong>{priceLabel(product.rentalPrice)} / {product.rentPeriod || 'period on enquiry'}</strong></p>
+                  {product.securityDeposit != null && <p>Security deposit: {priceLabel(product.securityDeposit)}</p>}
+                </>}
+                {availableDate && !Number.isNaN(availableDate.getTime()) && <p>Available from: {availableDate.toLocaleDateString('en-IN')}</p>}
+                {product.availabilityNote && <p className="whitespace-pre-wrap text-sm text-gray-600">{product.availabilityNote}</p>}
+                {product.availabilityStatus === 'on_rent' && <p className="text-sm text-blue-800">Future availability is subject to confirmation by 3MT.</p>}
               </div>
 
               {/* Description */}
@@ -228,13 +248,21 @@ function ProductDetail() {
               <hr className="border-gray-100 mb-8" />
 
               {/* Actions */}
-              <div className="space-y-4">
+              <div className="space-y-4 [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-40 [&_button]:break-words">
+                {offer === 'both' && <fieldset className="flex flex-wrap gap-4">
+                  <legend className="mb-2 font-semibold">Enquiry for</legend>
+                  {['sale', 'rent'].map((value) => <label key={value} className="flex items-center gap-2">
+                    <input type="radio" name="enquiryIntent" value={value} checked={intent === value} onChange={() => { setIntent(value); setQuantity(1); setEnquiryNotice(''); }} />
+                    {value === 'sale' ? 'Purchase' : 'Rental'}
+                  </label>)}
+                </fieldset>}
+                {!actions.canEnquire && <p role="status" className="text-sm text-gray-600">This machine is not available for {intent === 'rent' ? 'rental' : 'purchase'} enquiries.</p>}
                 {enquiryNotice && (
                   <p className="rounded-lg bg-yellow-50 px-4 py-3 text-sm font-medium text-yellow-800">
                     {enquiryNotice}
                   </p>
                 )}
-                <div className="flex flex-col sm:flex-row gap-4">
+                {intent === 'sale' && <div className="flex flex-col gap-4">
                   {/* Quantity Selector */}
                   <div className="flex items-center justify-between border-2 border-gray-200 rounded-xl bg-white sm:w-1/3">
                     <button 
@@ -242,7 +270,7 @@ function ProductDetail() {
                       aria-label="Decrease quantity"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-4 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors rounded-l-xl disabled:opacity-30"
-                      disabled={quantity <= 1}
+                      disabled={!actions.canEnquire || quantity <= 1}
                     >
                       <Minus className="w-5 h-5" />
                     </button>
@@ -250,7 +278,8 @@ function ProductDetail() {
                     <button 
                       type="button"
                       aria-label="Increase quantity"
-                      onClick={() => setQuantity(quantity + 1)}
+                      onClick={() => setQuantity(Math.min(actions.remaining, quantity + 1))}
+                      disabled={!actions.canEnquire || quantity >= actions.remaining}
                       className="p-4 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors rounded-r-xl"
                     >
                       <Plus className="w-5 h-5" />
@@ -261,21 +290,23 @@ function ProductDetail() {
                   <button 
                     type="button"
                     onClick={handleAddToCart}
+                    disabled={!actions.canAdd || quantity > actions.remaining}
                     className="flex-1 bg-gray-900 hover:bg-yellow-500 text-white hover:text-gray-900 text-lg font-black py-4 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex justify-center items-center gap-3 group"
                   >
                     <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                     Add to Cart
                   </button>
-                </div>
+                </div>}
 
                 {/* WhatsApp Enquire Button */}
                 <button 
                   type="button"
                   onClick={handleEnquire}
+                  disabled={!actions.canEnquire || busy}
                   className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-lg font-black py-4 rounded-xl shadow-md hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5 transition-all duration-300 flex justify-center items-center gap-3 group"
                 >
                   <MessageCircle className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                  Enquire via WhatsApp
+                  {intent === 'rent' ? (product.availabilityStatus === 'on_rent' ? 'Enquire About Future Availability' : 'Enquire About Rental') : 'Enquire via WhatsApp'}
                 </button>
               </div>
             </div>

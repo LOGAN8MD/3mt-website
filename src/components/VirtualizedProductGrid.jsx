@@ -3,7 +3,7 @@ import { Grid } from 'react-window';
 import ProductCard from './ProductCard';
 
 const GRID_GAP = 24;
-const ROW_HEIGHT = 390;
+const ROW_HEIGHT = 600;
 const MAX_GRID_HEIGHT = 860;
 
 const getColumnCount = (width) => {

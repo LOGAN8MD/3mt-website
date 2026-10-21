@@ -54,7 +54,7 @@ const buildCustomerDetailLines = (customer) => {
   return details.length > 0 ? ['', 'My Details:', ...details] : [];
 };
 
-export const buildProductEnquiryMessage = (product, quantity, customer) => {
+export const buildProductEnquiryMessage = (product, quantity, customer, intent = 'sale') => {
   const selectedQuantity = Number(quantity) || 1;
   const estimatedPrice = Number(product?.price || 0) * selectedQuantity;
 
@@ -63,8 +63,14 @@ export const buildProductEnquiryMessage = (product, quantity, customer) => {
     '',
     'Product Details:',
     `Product Name: ${product?.name || 'Product'}`,
+    `Condition: ${product?.condition === 'used' ? 'Second-Hand' : 'New'}`,
     `Quantity: ${selectedQuantity}`,
-    `Estimated Price: ${formatCurrency(estimatedPrice)}`,
+    ...(intent === 'rent' ? [
+      'Enquiry: Rental',
+      `Rental Rate: ${product?.rentalPrice != null ? formatCurrency(product.rentalPrice) : 'On enquiry'} / ${product?.rentPeriod || 'period to confirm'}`,
+      ...(product?.securityDeposit != null ? [`Security Deposit: ${formatCurrency(product.securityDeposit)}`] : []),
+      ...(product?.availabilityStatus === 'on_rent' ? ['Please confirm future availability.'] : []),
+    ] : ['Enquiry: Purchase', `Estimated Price: ${formatCurrency(estimatedPrice)}`]),
     ...buildCustomerDetailLines(customer),
   ].join('\n');
 };
@@ -73,7 +79,7 @@ export const buildCartEnquiryMessage = (cartItems, customer) => {
   const itemLines = cartItems.map((item, index) => {
     const lineTotal = Number(item.price || 0) * Number(item.quantity || 0);
 
-    return `${index + 1}. ${item.name} - Quantity: ${item.quantity} - Price: ${formatCurrency(lineTotal)}`;
+    return `${index + 1}. ${item.name} - ${item.condition === 'used' ? 'Second-Hand' : 'New'} - Purchase - Quantity: ${item.quantity} - Price: ${formatCurrency(lineTotal)}`;
   });
 
   const cartTotal = cartItems.reduce(

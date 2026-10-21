@@ -12,6 +12,12 @@ const SEARCH_DEBOUNCE_MS = 300;
 const VIRTUALIZED_GRID_THRESHOLD = 72;
 
 const initialFilters = {
+  condition: '',
+  availabilityType: '',
+  availabilityStatus: '',
+  rentPeriod: '',
+  minRentalPrice: '',
+  maxRentalPrice: '',
   search: '',
   type: '',
   category: '',
@@ -58,11 +64,13 @@ function Products() {
 
   useEffect(() => {
     const controller = new AbortController();
+    let active = true;
     const timeoutId = window.setTimeout(() => {
       const minPrice = Number(filters.minPrice);
       const maxPrice = Number(filters.maxPrice);
 
-      if (filters.minPrice && filters.maxPrice && minPrice > maxPrice) {
+      if ((filters.minPrice && filters.maxPrice && minPrice > maxPrice) ||
+          (filters.minRentalPrice && filters.maxRentalPrice && Number(filters.minRentalPrice) > Number(filters.maxRentalPrice))) {
         setProducts([]);
         setPagination(null);
         setError('Minimum price must be less than or equal to maximum price');
@@ -80,6 +88,12 @@ function Products() {
           page: currentPage,
           limit: PRODUCT_PAGE_SIZE,
           search: filters.search.trim(),
+          condition: filters.condition,
+          availabilityType: filters.availabilityType,
+          availabilityStatus: filters.availabilityStatus,
+          rentPeriod: filters.rentPeriod,
+          minRentalPrice: filters.minRentalPrice,
+          maxRentalPrice: filters.maxRentalPrice,
           type: filters.type,
           category: filters.category,
           brand: filters.brand,
@@ -91,6 +105,7 @@ function Products() {
         { signal: controller.signal }
       )
         .then(({ products: productData, pagination: paginationData }) => {
+          if (!active) return;
           setProducts((currentProducts) => (
             isFirstPage ? productData : [...currentProducts, ...productData]
           ));
@@ -99,7 +114,7 @@ function Products() {
           setLoadingMore(false);
         })
         .catch(err => {
-          if (err.code !== 'ERR_CANCELED') {
+          if (active && err.code !== 'ERR_CANCELED') {
             setError(err.message || 'Failed to fetch products');
             setLoading(false);
             setLoadingMore(false);
@@ -109,14 +124,32 @@ function Products() {
     }, SEARCH_DEBOUNCE_MS);
 
     return () => {
+      active = false;
       window.clearTimeout(timeoutId);
       controller.abort();
     };
   }, [filters, currentPage]);
 
   const handleFiltersChange = (nextFilters) => {
+    if (nextFilters.availabilityType !== filters.availabilityType) {
+      nextFilters = { ...nextFilters, minPrice: '', maxPrice: '', minRentalPrice: '', maxRentalPrice: '', rentPeriod: '', sort: 'newest' };
+    } else if (nextFilters.rentPeriod !== filters.rentPeriod) {
+      nextFilters = { ...nextFilters, minRentalPrice: '', maxRentalPrice: '', sort: 'newest' };
+    }
+    const switchingCatalog = nextFilters.condition !== filters.condition;
     setCurrentPage(1);
-    setFilters(nextFilters);
+    setProducts([]);
+    setPagination(null);
+    setLoading(true);
+    setLoadingMore(false);
+    setError(null);
+    setFilters(switchingCatalog ? {
+      ...initialFilters,
+      search: nextFilters.search,
+      brand: nextFilters.brand,
+      category: nextFilters.category,
+      condition: nextFilters.condition,
+    } : nextFilters);
   };
 
   const handleSearchChange = (event) => {
@@ -128,8 +161,7 @@ function Products() {
   };
 
   const handleClearFilters = () => {
-    setCurrentPage(1);
-    setFilters(initialFilters);
+    handleFiltersChange(initialFilters);
     setShowMobileFilters(false);
   };
 
@@ -142,10 +174,6 @@ function Products() {
     if (key === 'sort') return value !== initialFilters.sort;
     return value !== '';
   }).length;
-
-  if (loading && products.length === 0 && !pagination && !error) {
-    return <LoadingState label="Loading products" />;
-  }
 
   const totalProducts = pagination?.total ?? products.length;
   const hasMoreProducts = Boolean(pagination?.hasNextPage);
@@ -212,7 +240,7 @@ function Products() {
             <div>
               <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Latest Products</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">{filters.condition === 'used' ? 'Second-Hand Machines' : 'Latest Products'}</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Showing {products.length} of {totalProducts} products
                     {activeFilterCount > 0 ? ` with ${activeFilterCount} active filter${activeFilterCount > 1 ? 's' : ''}` : ''}
@@ -237,6 +265,8 @@ function Products() {
 
               {error ? (
                 <ErrorState message={error} />
+              ) : loading && products.length === 0 ? (
+                <LoadingState label="Loading products" />
               ) : products.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
                   <p className="text-gray-500 text-xl">No products found.</p>

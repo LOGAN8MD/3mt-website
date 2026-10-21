@@ -34,6 +34,17 @@ const variants = {
 
 function ProductCard({ product, variant = 'default' }) {
   const styles = variants[variant] || variants.default;
+  const offer = product.availabilityType || 'sale';
+  const statuses = {
+    available: { label: 'Available', style: 'bg-green-100 text-green-800' },
+    on_rent: { label: 'Currently on rent', style: 'bg-blue-100 text-blue-800' },
+    unavailable: { label: 'Unavailable', style: 'bg-gray-200 text-gray-700' },
+    sold: { label: 'Sold', style: 'bg-red-100 text-red-800' },
+  };
+  const status = statuses[product.availabilityStatus || 'available'] || statuses.unavailable;
+  const priceText = (value) => value !== undefined && value !== null && value !== '' && Number.isFinite(Number(value)) && Number(value) >= 0
+    ? formatCurrency(value) : 'Price on enquiry';
+  const period = ['day', 'week', 'month'].includes(product.rentPeriod) ? product.rentPeriod : null;
   const imageUrl = getOptimizedImageUrl(product.images?.[0]?.url, {
     width: variant === 'compact' ? 360 : 480,
   });
@@ -41,9 +52,9 @@ function ProductCard({ product, variant = 'default' }) {
   return (
     <Link
       to={`/product/${product._id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+      className="group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
     >
-      <div className={`relative flex w-full items-center justify-center overflow-hidden bg-gray-50/50 ${styles.image}`}>
+      <div className={`relative flex w-full shrink-0 items-center justify-center overflow-hidden bg-gray-50/50 ${styles.image}`}>
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -61,9 +72,9 @@ function ProductCard({ product, variant = 'default' }) {
       </div>
 
       <div className={`flex flex-grow flex-col ${styles.content}`}>
-        <div className={`flex items-start justify-between ${styles.badgeRow}`}>
+        <div className={`flex flex-wrap items-start justify-between break-words ${styles.badgeRow}`}>
           {product.brand && (
-            <span className={`inline-block rounded-full bg-yellow-100 font-bold uppercase tracking-widest text-yellow-800 ${styles.brandBadge}`}>
+            <span className={`inline-block max-w-full rounded bg-yellow-100 font-bold uppercase text-yellow-800 ${styles.brandBadge}`}>
               {product.brand}
             </span>
           )}
@@ -72,15 +83,26 @@ function ProductCard({ product, variant = 'default' }) {
           </span>
         </div>
 
+        <div className="mb-3 flex flex-wrap gap-1.5 text-xs font-semibold">
+          <span className="rounded bg-yellow-100 px-2 py-1 text-yellow-900">{product.condition === 'used' ? 'Second-Hand' : 'New'}</span>
+          <span className="rounded bg-gray-100 px-2 py-1 text-gray-700">{({ sale: 'For sale', rent: 'For rent', both: 'Sale and rent' })[offer] || 'Offer on enquiry'}</span>
+          <span className={`rounded px-2 py-1 ${status.style}`}>{status.label}</span>
+        </div>
+
         <h3 className={`mb-2 font-bold leading-tight text-gray-900 transition-colors line-clamp-2 group-hover:text-yellow-600 ${styles.title}`}>
           {product.name}
         </h3>
 
-        <div className={`mt-auto flex items-end justify-between border-t border-gray-50 ${styles.priceBlock}`}>
-          <div className="flex flex-col">
-            <span className={`mb-0.5 font-medium uppercase tracking-wide text-gray-400 ${styles.priceLabel}`}>Price</span>
-            <span className={`font-extrabold tracking-tight text-gray-900 ${styles.price}`}>{formatCurrency(product.price)}</span>
-          </div>
+        <div className={`mt-auto space-y-2 border-t border-gray-100 ${styles.priceBlock}`}>
+          {['sale', 'both'].includes(offer) && <div className="min-w-0">
+            <span className={`block font-medium text-gray-500 ${styles.priceLabel}`}>Sale price</span>
+            <span className={`block break-words font-extrabold text-gray-900 ${styles.price}`}>{priceText(product.price)}</span>
+          </div>}
+          {['rent', 'both'].includes(offer) && <div className="min-w-0">
+            <span className={`block font-medium text-gray-500 ${styles.priceLabel}`}>Rental rate</span>
+            <span className={`block break-words font-extrabold text-gray-900 ${styles.price}`}>{priceText(product.rentalPrice)}{period ? <span className="text-sm font-medium"> / {period}</span> : null}</span>
+            {!period && <span className="text-xs text-gray-500">Period on enquiry</span>}
+          </div>}
         </div>
       </div>
     </Link>

@@ -19,6 +19,15 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
   const categories = filterOptions?.categories || [];
   const types = filterOptions?.types || [];
   const priceRange = filterOptions?.priceRange || {};
+  const used = filters.condition === 'used';
+  const renting = used && ['rent', 'both'].includes(filters.availabilityType);
+  const selectClass = 'w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-yellow-100';
+  const visibleSortOptions = sortOptions.filter((option) =>
+    !option.value.startsWith('price') || !used || ['sale', 'both'].includes(filters.availabilityType));
+  if (renting && filters.rentPeriod) visibleSortOptions.push(
+    { value: 'rentalPriceAsc', label: 'Rental rate: Low to High' },
+    { value: 'rentalPriceDesc', label: 'Rental rate: High to Low' },
+  );
 
   const updateFilter = (field, value) => {
     onChange({
@@ -45,6 +54,57 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
       </div>
 
       <div className="space-y-5">
+        <label className="flex cursor-pointer items-center justify-between gap-3 border-b border-gray-200 pb-5">
+          <span className="text-sm font-bold text-gray-900">Second-Hand Machines</span>
+          <span className="relative inline-flex h-6 w-11 shrink-0">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={filters.condition === 'used'}
+              onChange={(event) => updateFilter('condition', event.target.checked ? 'used' : '')}
+              className="peer sr-only"
+            />
+            <span aria-hidden="true" className="absolute inset-0 rounded-full bg-gray-300 transition-colors peer-checked:bg-yellow-500 peer-focus-visible:ring-2 peer-focus-visible:ring-gray-900 peer-focus-visible:ring-offset-2" />
+            <span aria-hidden="true" className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
+          </span>
+        </label>
+        {used && <>
+          <label className="block text-sm font-bold text-gray-700">
+            Offer
+            <select className={selectClass} value={filters.availabilityType} onChange={(event) => updateFilter('availabilityType', event.target.value)}>
+              <option value="">All offers</option>
+              <option value="sale">For sale</option>
+              <option value="rent">For rent</option>
+              <option value="both">Sale and rent</option>
+            </select>
+          </label>
+          <label className="block text-sm font-bold text-gray-700">
+            Availability
+            <select className={selectClass} value={filters.availabilityStatus} onChange={(event) => updateFilter('availabilityStatus', event.target.value)}>
+              <option value="">All statuses</option>
+              <option value="available">Available now</option>
+              <option value="on_rent">Currently on rent</option>
+              <option value="unavailable">Unavailable</option>
+              <option value="sold">Sold</option>
+            </select>
+          </label>
+          {renting && <label className="block text-sm font-bold text-gray-700">
+            Rental period
+            <select className={selectClass} value={filters.rentPeriod} onChange={(event) => updateFilter('rentPeriod', event.target.value)}>
+              <option value="">All periods</option>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+            </select>
+          </label>}
+          {renting && filters.rentPeriod && <fieldset>
+            <legend className="mb-2 text-sm font-bold text-gray-700">Rental rate per {filters.rentPeriod}</legend>
+            <div className="grid grid-cols-2 gap-3">
+              <input aria-label="Minimum rental rate" type="number" min="0" className={selectClass} placeholder="Min" value={filters.minRentalPrice} onChange={(event) => updateFilter('minRentalPrice', event.target.value)} />
+              <input aria-label="Maximum rental rate" type="number" min="0" className={selectClass} placeholder="Max" value={filters.maxRentalPrice} onChange={(event) => updateFilter('maxRentalPrice', event.target.value)} />
+            </div>
+          </fieldset>}
+        </>}
         <label className="block">
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Search</span>
           <div className="relative">
@@ -59,7 +119,7 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
           </div>
         </label>
 
-        <label className="block">
+        {filters.condition !== 'used' && <label className="block">
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Type</span>
           <select
             value={filters.type}
@@ -73,7 +133,7 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
               </option>
             ))}
           </select>
-        </label>
+        </label>}
 
         <label className="block">
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Category</span>
@@ -107,7 +167,7 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
           </select>
         </label>
 
-        <div>
+        {(!used || ['sale', 'both'].includes(filters.availabilityType)) && <div>
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Price Range</span>
           <div className="grid grid-cols-2 gap-3">
             <input
@@ -127,9 +187,9 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-yellow-400 focus:bg-white focus:ring-2 focus:ring-yellow-100"
             />
           </div>
-        </div>
+        </div>}
 
-        <label className="block">
+        {!used && <label className="block">
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Stock</span>
           <select
             value={filters.inStock}
@@ -142,7 +202,7 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
               </option>
             ))}
           </select>
-        </label>
+        </label>}
 
         <label className="block">
           <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-500">Sort</span>
@@ -151,7 +211,7 @@ function ProductFilters({ filters, filterOptions, onChange, onClear, className =
             onChange={(event) => updateFilter('sort', event.target.value)}
             className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-yellow-400 focus:bg-white focus:ring-2 focus:ring-yellow-100"
           >
-            {sortOptions.map((option) => (
+            {visibleSortOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

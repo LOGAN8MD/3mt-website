@@ -1,24 +1,26 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearCart, removeFromCart, updateQuantity } from '../redux/cartSlice';
+import { consumeEnquiredItems, removeFromCart, updateQuantity } from '../redux/cartSlice';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
-import { buildCartEnquiryMessage } from '../utils/whatsapp';
 import { getOptimizedImageUrl } from '../utils/cloudinaryImage';
 import { useAuth } from '../context/AuthContext';
-import { openTrackedWhatsAppEnquiry } from '../utils/trackedWhatsAppEnquiry';
+import { useEnquiryConfirmation } from '../components/EnquiryConfirmation';
+import { getProductActions } from '../utils/productActions';
 
 function Cart() {
   const cartItems = useSelector(state => state.cart.cartItems);
   const dispatch = useDispatch();
   const { requireAuth } = useAuth();
+  const { prepare, confirmation, busy } = useEnquiryConfirmation();
   const [enquiryNotice, setEnquiryNotice] = React.useState('');
   const [enquiryNoticeType, setEnquiryNoticeType] = React.useState('success');
 
   const handleQuantityChange = (id, currentQuantity, change) => {
     const newQuantity = currentQuantity + change;
-    if (newQuantity >= 1) {
+    const item = cartItems.find((entry) => entry._id === id);
+    if (newQuantity >= 1 && (change < 0 || newQuantity <= getProductActions(item, 'sale').limit)) {
       dispatch(updateQuantity({ id, quantity: newQuantity }));
     }
   };
@@ -39,28 +41,31 @@ function Cart() {
     setEnquiryNoticeType('success');
 
     requireAuth((authUser) => {
-      const message = buildCartEnquiryMessage(cartItems, authUser);
-
       return (
-      openTrackedWhatsAppEnquiry({
-        message,
+      prepare({
+        customer: authUser,
         enquiry: {
           source: 'cart',
           products: cartItems.map((item) => ({
             productId: item._id,
             quantity: item.quantity,
+            intent: 'sale',
           })),
         },
         onTracked: () => {
-          dispatch(clearCart());
+          dispatch(consumeEnquiredItems(cartItems));
           setEnquiryNoticeType('success');
-          setEnquiryNotice('Your enquiry was saved successfully. Your cart has been cleared.');
+          setEnquiryNotice('Your enquiry was saved successfully. Enquired quantities have been removed from your cart.');
         },
         onTrackingError: () => {
           setEnquiryNoticeType('warning');
           setEnquiryNotice(
             'WhatsApp opened, but the enquiry could not be saved right now. Your cart has been kept. Please connect via call or WhatsApp message from the Contact Us section and inform the 3MT team.'
           );
+        },
+        onValidationError: (error) => {
+          setEnquiryNoticeType('warning');
+          setEnquiryNotice(`${error.message || 'Unable to check current availability.'} Your cart has been kept. Review the product details or remove unavailable items before trying again.`);
         },
       })
       );
@@ -69,6 +74,7 @@ function Cart() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      {confirmation}
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Your Cart</h1>
 
@@ -129,6 +135,7 @@ function Cart() {
                             <span className="px-4 py-1 text-gray-900 font-medium min-w-[3rem] text-center">{item.quantity}</span>
                             <button 
                               onClick={() => handleQuantityChange(item._id, item.quantity, 1)}
+                              disabled={!getProductActions(item, 'sale').canEnquire || item.quantity >= getProductActions(item, 'sale').limit}
                               className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors rounded-r-lg"
                             >
                               <Plus className="w-4 h-4" />
@@ -169,6 +176,7 @@ function Cart() {
 
                 <button 
                   onClick={handleWhatsAppEnquiry}
+                  disabled={busy}
                   className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg shadow-[#25D366]/30"
                 >
                   <MessageCircle className="w-5 h-5" />
